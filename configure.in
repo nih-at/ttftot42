@@ -43,7 +43,7 @@ AC_CHECK_LIB(ttf, TT_Open_Face)
 old_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -I$FREETYPE_INCLUDE"
 AC_CHECK_HEADERS(freetype/freetype.h freetype.h)
-CPPFLAGS="old_$CPPFLAGS"
+CPPFLAGS="$old_CPPFLAGS"
 
 if test "$ac_cv_lib_ttf_TT_Open_Face" != "yes"
 then
