@@ -94,6 +94,8 @@ open_font(char *fname, int what)
     if (weight >= nweight)
 	weight = nweight-1;
     f->weight = strdup(weight_name[weight]);
+    f->ascender = SCALE(os2->sTypoAscender);
+    f->descender = SCALE(os2->sTypoDescender);
 
     f->tt_version = strdup("001.000"); /* otherwise FreeType wont open it */
     f->version = (char *)malloc(8);

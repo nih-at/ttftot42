@@ -15,7 +15,8 @@ both
 
 afm
 
-* CapHeight, XHeight, Ascender, Descender, StdHW, StdVW (OS/2)
+* CapHeight, XHeight (OS/2)
+* StdHW, StdVW
 
 t42
 

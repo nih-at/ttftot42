@@ -77,14 +77,14 @@ struct font {
     char *italic_angle;
     int underline_position;
     int underline_thickness;
+    int ascender;
+    int descender;
 
     struct bbox font_bbox;
 
     /* encoding_scheme */
     /* cap_height */
     /* x_height */
-    /* ascender */
-    /* descender */
     
     char *font_name;
 };

@@ -65,6 +65,7 @@ print_names(char *fname)
 	if (s)
 	    printf("%s%s\n", name[i], s);
     }
+    printf("Vendor-ID:    %.4s\n", prop.os2->achVendID);
     putchar('\n');
 
     TT_Close_Face(face);

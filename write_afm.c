@@ -99,8 +99,8 @@ Comment Creator: " PACKAGE " " VERSION "\n";
     fputs("EncodingScheme AdobeStandardEncoding\n", fout);
     /* XXX: CapHeight */
     /* XXX: XHeight */
-    /* XXX: Ascender */
-    /* XXX: Descender */
+    fprintf(fout, "Ascender %d\n", f->ascender);
+    fprintf(fout, "Descender %d\n", f->descender);
     /* XXX: StdHW */
     /* XXX: StdVW */
 
