@@ -18,8 +18,15 @@ embedded in a PostScript font dictionary; this format is called Type 42.
 can also generate Adobe Font Metrics files (AFM files), including
 kerning information.
 
-  Not yet supported are TrueType Collections and the creation of CID
-keyed fonts from large TrueType fonts (East Asian or Unicode fonts).
+  Support for the creation of CID keyed fonts from large TrueType
+fonts (East Asian or Unicode fonts) is included in this version, but
+it is far from finished: AFM files are not created and glyph
+substitution for vertical writing mode and alternative glyph forms
+(e. g. localized versions of kanji) is not done, since support for it
+is not implemented in FreeType 1.2.  Thus, the resulting fonts cannot
+be used in vertical writing mode.
+
+  Not yet supported are TrueType Collections.
 
 
   If you make a binary distribution, please include a pointer to the

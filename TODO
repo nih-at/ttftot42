@@ -1,6 +1,6 @@
 general
 
-! CID references
+! check CID references
 ! document CID/ACID format
 
 * xmalloc.h
@@ -23,6 +23,7 @@ afm
 * CapHeight, XHeight (OS/2) [not provided by FreeType]
 * StdHW, StdVW
 * better handling of encodings with glyphs encoded more than once (ISOLatin1)
+* Composites
 * create CID AFM files
 
 t42
@@ -35,10 +36,11 @@ t42
 
 cid2
 
-! create index file
+* create index file automatically
 ! find cid file based on registry-ordering-supplement
-! vert and feature substitiutions
+* vert and feature substitiutions (not implemented in FreeType 1.2)
 
 acidtocid, cidtoacid:
 
-! error handling
+* error handling
+* cidtoacid: output to stdout (-c)

@@ -1,3 +1,12 @@
+1999-04-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.in: check for TTO_GSUB_Apply to determine GSUB support
+	in FreeType.
+
+	* cid_mkmap.c (cid_mkmap): do feature substitution (currently
+	doing nothing since not implemented in FreeType 1.2).
+	(get_feature), (apply_features): new functions.
+
 1999-04-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* cid_mkmap.c (cid_mkmap): return last defined cid + 1.
@@ -8,6 +17,7 @@
 	* main.c (main): use find_cid to read cid struct.
 	(find_cid): dummy definition
 
+	* cid.c: removed.
 	* write_cid2.c (write_cidmap): moved here from cid.c; now uses
 	cid_mkmap.
 	* cid_mkmap.c (cid_mkmap): new function

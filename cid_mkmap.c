@@ -22,11 +22,21 @@
 
 #include "t42.h"
 
+struct cmap_feature {
+    TT_UShort sidx, lidx, fidx;
+};
+
 struct cmap_state {
     int valid;
     TT_CharMap cmap;
-    /* features */
+    int nvert, nfeature;
+    struct cmap_feature *vert, feature;
 };
+
+#ifdef HAVE_GSUB
+static int get_feature(font *f, struct cid_feature *feature,
+		       struct cmap_feature *feat)
+#endif
 
 
 
@@ -37,6 +47,9 @@ cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp)
     unsigned short *map;
     int valid, v, flags;
     int i, j, ncid;
+#ifdef HAVE_GSUB
+    int k;
+#endif
     unsigned short pl, en;
 
     state = (struct cmap_state *)xmalloc(sizeof(struct cmap_state)*cid->ncmap);
@@ -52,8 +65,38 @@ cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp)
 		break;
 	    }
 	}
-	if (state[i].valid)
+	if (state[i].valid) {
 	    cid_decode_init(cid->cmap[i].code);
+#ifdef HAVE_GSUB
+	    if (cid->cmap[i].nvert)
+		state[i].vert
+		    = (struct cmap_feature *)xmalloc(sizeof(struct
+							    cmap_feature)
+						     * cid->cmap[i].nvert);
+	    else
+		state[i].vert = NULL;
+	    if (cid->cmap[i].nfeature)
+		state[i].feature
+		    = (struct cmap_feature *)xmalloc(sizeof(struct
+							    cmap_feature)
+						     * cid->cmap[i].nfeature);
+	    else
+		state[i].feature = NULL;
+	    state[i].nvert = state[i].nfeature = 0;
+	    for (k=0; k<cid->cmap[i].nvert; k++) {
+		if (get_feature(f->face,
+				cid->cmap[i].vert+k,
+				state[i].vert+state[i].nvert) == 0)
+		    state[i].nvert++;
+	    }
+	    for (k=0; k<cid->cmap[i].nfeature; k++) {
+		if (get_feature(f->face,
+				cid->cmap[i].feature+k,
+				state[i].feature+state[i].nfeature) == 0)
+		    state[i].nfeature++;
+	    }
+#endif /* HAVE_GSUB */
+	}
     }
 
     if (valid == 0) {
@@ -73,8 +116,21 @@ cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp)
 		if ((flags & CID_NENC) == 0 && state[j].valid && map[i] == 0) {
 		    if ((v=TT_Char_Index(state[j].cmap, v)) != 0) {
 			/* XXX: apply vert & feature */
+#ifdef HAVE_GSUB
+			if (flags & CID_VERT) {
+			    v = apply_features(f, state[j].nvert,
+					       state[j].vert, v);
+			}
+			v = apply_features(f, state[j].nfeature,
+					   state[j].feature, v);
 			map[i] = v;
 			ncid = i;
+#else /* HAVE_GSUB */
+			if (!(flags & CID_VERT)) {
+			    map[i] = v;
+			    ncid = i;
+			}
+#endif
 		    }
 		}
 	    } while (flags & CID_ALT);
@@ -82,5 +138,44 @@ cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp)
     }
 
     *mapp = map;
+    
+#ifdef HAVE_GSUB
+    for (i=0; i<cid->ncmap; i++) {
+	if (state[i].valid) {
+	    free(state[i].vert);
+	    free(state[i].feature);
+	}
+    }
+#endif HAVE_GSUB
+
     return ncid+1;
 }
+
+
+
+#ifdef HAVE_GSUB
+
+static int
+get_feature(font *f, struct cid_feature *feature, struct cmap_feature *feat)
+{
+    if (TT_GSUB_Select_Script(f->gsub, feature->script, &feat->sidx))
+	return -1;
+    if (TT_GSUB_Select_Language(f->gsub, feature->language,
+				feat->sidx, &feat->lidx))
+	return -1;
+    if (TT_GSUB_Select_Feature(f->gsub, feature->feature,
+			       feat->sidx, feat->lidx, &feat->fidx))
+	return -1;
+    return 0;
+}
+
+
+
+static int
+apply_features(font *f, int n, struct cmap_feature *feat, int v)
+{
+    /* XXX: FreeType 1.2 doesn't implement TTO_GSUB_Apply */
+    return v;
+}
+#endif /* HAVE_GSUB */
+
