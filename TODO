@@ -10,6 +10,7 @@ general
 
 both
 
+! handle post table v3: no glyph names
 * error handling (e. g. write error)
 * validate lexical correctness of glyph names
 * parse version string more liberally
