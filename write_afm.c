@@ -170,7 +170,7 @@ make_revenc(struct encoding *encoding)
     if (encoding->reverse != NULL)
 	return 0;
 
-    encoding->reverse = (struct rev_enc *)xmalloc(sizeof(struct rev_enc));
+    encoding->reverse = (struct rev_enc *)xmalloc(256*sizeof(struct rev_enc));
 
     for (i=j=0; i<256; i++) {
 	if (encoding->vector[i]) {
