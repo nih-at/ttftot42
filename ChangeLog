@@ -1,3 +1,7 @@
+2001-11-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.in: fix test for freetype includes.
+
 2000-11-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* t42.h: include <freetype/freetype.h> if we have it.

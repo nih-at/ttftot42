@@ -27,22 +27,32 @@ then
     then
 	# PREFIX is to uninstalled version in distribution directory
 	# XXX: check for newer versions of freetype
-	CFLAGS="$CFLAGS -I$with_freetype/lib"
+	FREETYPE_INCLUDE="$with_freetype/lib"
 	LDFLAGS="$LDFLAGS -L$with_freetype/lib"
     else
 	# PREFIX is installation prefix
-	CFLAGS="$CFLAGS -I$with_freetype/include"
+	FREETYPE_INCLUDE="$with_freetype/include"
 	LDFLAGS="$LDFLAGS -L$with_freetype/lib -Wl,-R$with_freetype/lib"
     fi
 fi
+CFLAGS="$CFLAGS -I$FREETYPE_INCLUDE"
+
 
 AC_CHECK_LIB(ttf, TT_Open_Face)
 
+old_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS -I$FREETYPE_INCLUDE"
 AC_CHECK_HEADERS(freetype/freetype.h freetype.h)
+CPPFLAGS="old_$CPPFLAGS"
 
 if test "$ac_cv_lib_ttf_TT_Open_Face" != "yes"
 then
     AC_MSG_ERROR(FreeType library not found -- cannot continue)
+fi
+if test "$ac_cv_header_freetype_freetype_h" != "yes" \
+   -a "$ac_cv_header_freetype_h" != "yes" 
+then
+    AC_MSG_ERROR(FreeType includes not found -- cannot continue)
 fi
 
 AC_CHECK_HEADERS(libgen.h)
