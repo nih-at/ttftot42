@@ -25,9 +25,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <ftxpost.h>
 
 #include "config.h"
+
+#ifdef HAVE_FREETYPE_FREETYPE_H
+#include <freetype/ftxpost.h>
+#else
+#include <ftxpost.h>
+#endif
+
 #include "t42.h"
 
 

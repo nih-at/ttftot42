@@ -24,7 +24,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <freetype.h>
+
+#include "t42.h"
 
 /*
   apple unicode 0

@@ -2,7 +2,8 @@
 
 	* configure.in: fix test for freetype includes.
 	* t42.h: include <config.h> before using values defined in it.
-	* close_font.c, init.c, open_font.c: fix freetype header inclusion.
+	* close_font.c, get_name.c, init.c, open_font.c, write_afm.c,
+	write_cid2.c, write_t42.c: fix freetype header inclusion.
 
 2000-11-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
