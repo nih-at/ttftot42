@@ -31,6 +31,12 @@
 
 #include "t42.h"
 
+static char *weight_name[] = {
+    "Thin", "Extra Light", "Light", "Regular", "Medium",
+    "Semibold", "Bold", "Extra Bold", "Black"
+};
+int nweight = sizeof(weight_name)/sizeof(weight_name[0]);
+
 static char *fixed2str(TT_Fixed f, int prec);
 static int read_dir(font *f, char *fname);
 
@@ -40,12 +46,13 @@ font *
 open_font(char *fname, int what)
 {
     font *f;
-    int err, i, j;
+    int err, i, j, weight;
 
     TT_Face face;
     TT_Face_Properties prop;
     TT_Postscript *ps;
     TT_Header *hdr;
+    TT_OS2 *os2;
     TT_Post post;
 
     if ((f=(font *)malloc(sizeof(font))) == NULL)
@@ -60,6 +67,7 @@ open_font(char *fname, int what)
     TT_Load_PS_Names(face, &post);
 
     hdr = prop.header;
+    os2 = prop.os2;
     ps = prop.postscript;
     
     /* fill out info */
@@ -82,6 +90,11 @@ open_font(char *fname, int what)
     f->underline_thickness = ps->underlineThickness;
     f->is_fixed_pitch = ps->isFixedPitch;
 
+    weight = (os2->usWeightClass-50)/100;
+    if (weight >= nweight)
+	weight = nweight-1;
+    f->weight = strdup(weight_name[weight]);
+
     f->tt_version = strdup("001.000"); /* otherwise FreeType wont open it */
     f->version = (char *)malloc(8);
     sprintf(f->version, "%03ld.%03ld",
@@ -96,7 +109,6 @@ open_font(char *fname, int what)
     f->full_name = get_name(f->face, f->nnames, TT_NAME_ID_FULL_NAME);
     f->family_name = get_name(f->face, f->nnames, TT_NAME_ID_FONT_FAMILY);
     /* XXX: the following is wrong */
-    f->weight = get_name(f->face, f->nnames, TT_NAME_ID_FONT_SUBFAMILY);
     f->notice = get_name(f->face, f->nnames, TT_NAME_ID_COPYRIGHT);
 
     if (what & WHAT_FONT) {

@@ -11,12 +11,11 @@ both
 * error handling (e. g. write error)
 * validate lexical correctness of glyph names
 * version vs. font_revision
-* Weight (subfamily is wrong)
 - XUID
 
 afm
 
-* CapHeight, XHeight, Ascender, Descender, StdHW, StdVW
+* CapHeight, XHeight, Ascender, Descender, StdHW, StdVW (OS/2)
 
 t42
 
