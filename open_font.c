@@ -118,6 +118,7 @@ open_font(char *fname, int what)
 	if (!strchr(" \t\n\r()<>[]/%", f->font_name[i]))
 	    f->font_name[j++] = f->font_name[i];
     }
+    f->font_name[j] = '\0';
     f->full_name = get_name(f->face, f->nnames, TT_NAME_ID_FULL_NAME);
     f->family_name = get_name(f->face, f->nnames, TT_NAME_ID_FONT_FAMILY);
     /* XXX: the following is wrong */

@@ -19,12 +19,12 @@ afm
 
 * CapHeight, XHeight (OS/2)
 * StdHW, StdVW
-* handle encodings with glyphs encoded more than once (e. g. ISOLatin1)
+* better handling of encodings with glyphs encoded more than once (ISOLatin1)
 
 t42
 
 * PaintType (how to recognize 2, StrokeWidth)
 * detect missing tables
 * read glyf table in parts, use static buffer for tables
-* put only glyphs in encoding array that are present in font
+* put only glyphs into encoding array that are present in font
 - embed full font (--full)

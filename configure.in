@@ -1,5 +1,5 @@
 AC_INIT(write_t42.c)
-AM_INIT_AUTOMAKE(ttftot42, 0.2a)
+AM_INIT_AUTOMAKE(ttftot42, 0.3)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_WITH(freetype,

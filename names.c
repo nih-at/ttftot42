@@ -52,6 +52,7 @@ print_names(char *fname)
 {
     char *s;
     int i;
+    short pl, en;
 
     TT_Face face;
     TT_Face_Properties prop;
@@ -66,6 +67,16 @@ print_names(char *fname)
 	    printf("%s%s\n", name[i], s);
     }
     printf("Vendor-ID:    %.4s\n", prop.os2->achVendID);
+
+    printf("CMaps:        ");
+    for (i=0; i<TT_Get_CharMap_Count(face); i++) {
+	TT_Get_CharMap_ID(face, i, &pl, &en);
+	if (i != 0)
+	    printf(", ");
+	printf("%d/%d", (int)pl, (int)en);
+    }
+    putchar('\n');
+
     putchar('\n');
 
     TT_Close_Face(face);

@@ -48,7 +48,7 @@ char *strdup(char *name);
 #define WHAT_FONT  0x1   /* output Type 42 font */
 #define WHAT_AFM   0x2   /* output AFM file */
 #define WHAT_NAME  0x4   /* print FontName to stdout */
-#define WHAT_FMAP  0x8   /* print Ghostscript Fontmap lines to stdout */
+#define WHAT_FILE  0x8   /* print FontName and file name to stdout */
 
 #define MAX_STRLEN  65534    /* max. PostScript string length - 1 */
 #define LINE_LEN    36       /* length of one line (in bytes) */

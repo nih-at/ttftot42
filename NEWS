@@ -1,6 +1,7 @@
-release 0.3:  
+release 0.3:  (1999/01/04)
 
-* new options: --name and --fontmap (print FontName or Fontmap entry to stdout)
+* handle ISOLatin1 and PDFDoc encodings
+* new options: --name and --filename (print FontName / file name to stdout)
 * adjust font checksum in head table of included TrueType font.
 * omit duplicate entries for .notdef in CharStrings dictionary.
 

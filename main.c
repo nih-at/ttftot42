@@ -54,7 +54,7 @@ char help_string[] = "\
   -a, --afm             write afm file\n\
   -f, --font            write t42 file\n\
   -n, --name            print FontName to standard output\n\
-  -N, --fontmap         print Ghostscript Fontmap lines to standard output\n\
+  -N, --filename        print FontName and file name to standard output\n\
   -o, --output FILE     output to FILE\n\
   -c, --stdout          output to standard output\n\
   -e, --encoding ENC    encoding to use (std, pdf, latin1)\n\
@@ -71,7 +71,7 @@ struct option options[] = {
     { "afm",       0, 0, 'a' },
     { "font",      0, 0, 'f' },
     { "name",      0, 0, 'n' },
-    { "fontmap",   0, 0, 'N' },
+    { "filename",  0, 0, 'N' },
     { "output",    1, 0, 'o' },
     { "stdout",    0, 0, 'c' },
     { "encoding",  1, 0, 'e' },
@@ -119,7 +119,7 @@ main(int argc, char **argv)
 	    what |= WHAT_NAME;
 	    break;
 	case 'N':
-	    what |= WHAT_FMAP;
+	    what |= WHAT_FILE;
 	    break;
 	case 'F':
 	    full = 1;
@@ -188,12 +188,12 @@ main(int argc, char **argv)
 	    exit(1);
 	}
     }
-    if ((what & (WHAT_NAME|WHAT_FMAP)) == (WHAT_NAME|WHAT_FMAP)) {
+    if ((what & (WHAT_NAME|WHAT_FILE)) == (WHAT_NAME|WHAT_FILE)) {
 	fprintf(stderr, "%s: can't write both FontName and Fontmap line to "
 		"standard output\n", prg);
 	exit(1);
     }
-    if (cat && what & (WHAT_NAME|WHAT_FMAP)) {
+    if (cat && what & (WHAT_NAME|WHAT_FILE)) {
 	fprintf(stderr, "%s: can't write both font and %s to "
 		"standard output\n",
 		prg,
@@ -262,11 +262,16 @@ main(int argc, char **argv)
 	}
 	if (what & WHAT_NAME)
 	    printf("%s\n", f->font_name);
-	if (what & WHAT_FMAP) {
+	if (what & WHAT_FILE) {
+#if 0
 	    if (!outfile)
 		outfile = substext(basename(fontfile), ".ttf", ".t42");
 	    printf("/%s\t(%s) ;\n", f->font_name, outfile);
 	    outfile = NULL;
+#endif
+	    printf("%s\t%s\n",
+		   f->font_name,
+		   outfile ? outfile : basename(fontfile));
 	}
 
 	close_font(f);

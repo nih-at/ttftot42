@@ -1,3 +1,11 @@
+1999-01-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* open_font.c (open_font): terminate font_name when wheeding out
+	illegal characters.
+
+	* main.c (main): changed --fontmap to --filename (and WHAT_FMAP to
+	WHAT_FILE).
+
 1999-01-03  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* open_font.c (open_font): parse Version string
