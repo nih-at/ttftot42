@@ -86,6 +86,7 @@ extern char *enc_standard[256];
 void *xmalloc(size_t size);
 
 int init(void);
+int done(void);
 font *open_font(char *fname);
 void close_font(font *f);
 char *get_name(TT_Face f, int nnames, int name);

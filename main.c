@@ -231,6 +231,8 @@ main(int argc, char **argv)
 	close_font(f);
     }
 
+    done();
+
     exit(err);
 }
 

@@ -1,6 +1,5 @@
 general
 
-! done (destroy fte &c)
 * use xmalloc
 * handle other encodings
 - TrueType collections
@@ -20,7 +19,8 @@ afm
 t42
 
 * PaintType (how to recognize 2, StrokeWidth)
-! fix checksums
+! check whether Adobe accepts wrong checksum
+* fix checksums (how?!)
 ! split long glyf table
 * detect missing or too long tables
 - embed full font (--full)

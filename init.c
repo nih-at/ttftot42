@@ -38,3 +38,13 @@ init(void)
 
     return 0;
 }
+
+
+
+int
+done(void)
+{
+    TT_Done_FreeType(fte);
+
+    return 0;
+}
