@@ -3,6 +3,18 @@
 
 #define SCALE(fu)	((int)(((fu)*1000)/f->units_per_em))
 
+#define TTAG_cvt   MAKE_TT_TAG( 'c', 'v', 't', ' ' )
+#define TTAG_fpgm  MAKE_TT_TAG( 'f', 'p', 'g', 'm' )
+#define TTAG_glyf  MAKE_TT_TAG( 'g', 'l', 'y', 'f' )
+#define TTAG_head  MAKE_TT_TAG( 'h', 'e', 'a', 'd' )
+#define TTAG_hhea  MAKE_TT_TAG( 'h', 'h', 'e', 'a' )
+#define TTAG_hmtx  MAKE_TT_TAG( 'h', 'm', 't', 'x' )
+#define TTAG_loca  MAKE_TT_TAG( 'l', 'o', 'c', 'a' )
+#define TTAG_maxp  MAKE_TT_TAG( 'm', 'a', 'x', 'p' )
+#define TTAG_prep  MAKE_TT_TAG( 'p', 'r', 'e', 'p' )
+
+
+
 struct bbox {
     int llx, lly, urx, ury;
 };
@@ -19,7 +31,6 @@ struct font {
     int units_per_em;
 
     char *notice;
-    char *copyright;
     char *full_name;
     char *family_name;
     char *weight;
@@ -30,7 +41,6 @@ struct font {
 
     struct bbox font_bbox;
 
-    /* version */
     /* encoding_scheme */
     /* cap_height */
     /* x_height */
@@ -48,6 +58,7 @@ extern char *enc_standard[256];
 
 int init(void);
 font *open_font(char *fname);
+void close_font(font *f);
 char *get_name(TT_Face f, int nnames, int name);
 int write_t42(font *f, FILE *fout);
 int write_afm(font *f, FILE *fout);

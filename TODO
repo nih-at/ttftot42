@@ -1,10 +1,12 @@
 general
 
-* autoconfiscate, gnu standards compliance
+* COPYRIGHT NOTICE
+* done (destroy fte &c)
 * handle other encodings
 
 both
 
+* version vs. font_revision
 * Weight (subfamily is wrong)
 * XUID
 

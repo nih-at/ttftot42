@@ -1,0 +1,24 @@
+AC_INIT(write_t42.c)
+AM_INIT_AUTOMAKE(otftot42, 0.1)
+AM_CONFIG_HEADER(config.h)
+
+# We want these before the checks, so the checks can modify their values.
+test -z "$CFLAGS" && CFLAGS='-g -Wall -I/usr/local/include' auto_cflags=1
+test -z "$LDFLAGS" && LDFLAGS='-L/usr/local/lib' auto_ldflags=1
+
+dnl AC_CANONICAL_HOST
+dnl AM_PROG_LIBTOOL
+AC_PROG_CC
+AM_PROG_INSTALL
+
+AC_CHECK_LIB(ttf, TT_Open_Face)
+
+if test "$ac_cv_lib_ttf_TT_Open_Face" != "yes"
+then
+    AC_MSG_ERROR(FreeType library not found -- cannot continue)
+fi
+
+AC_REPLACE_FUNCS(strdup strerror basename)
+AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
+
+AC_OUTPUT(Makefile)

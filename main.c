@@ -212,22 +212,14 @@ main(int argc, char **argv)
 	    if (fout)
 		write_t42(f, fout);
 	}
+
+	close_font(f);
     }
 
     exit(err);
 }
 
 
-
-char *
-basename(char *name)
-{
-    char *s;
-
-    if ((s=strrchr(name, '/')))
-	return s+1;
-    return name;
-}
 
 char *
 substext(char *fname, char *ext, char *newext)
