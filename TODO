@@ -34,7 +34,7 @@ t42
 cid2
 
 * create index file automatically
-* CIDPATH
+! CIDPATH
 * vert and feature substitiutions (not implemented in FreeType 1.2)
 
 acidtocid, cidtoacid:
