@@ -168,13 +168,15 @@ write_strdef(FILE *fout, char *n, char *s)
 
 
 
+#define FIXED_SUM  0xB4DED201    /* checksum of fixpart and table tags */
+
 static int
 write_sfnts(font *f, FILE *fout)
 {
     static char *fixpart = "/sfnts[<\n00010000""0009""0080""0003""0010\n";
 
     int i, slen, soff;
-    unsigned long offset;
+    unsigned long offset, checksum;
     struct table wdir[9];  /* dir ready for writing */
     unsigned char *loca, *b;
 
@@ -187,10 +189,15 @@ write_sfnts(font *f, FILE *fout)
 	offset += (wdir[i].length+3) & ~3;
     }
     
-    /* XXX: adjust head checksum & font checksum in head table */
+    /* compute font checksum for head table */
 
-    for (i=0; i<9; i++)
+    checksum = FIXED_SUM;
+    for (i=0; i<9; i++) {
 	write_tabledir_entry(fout, wdir+i);
+	checksum += wdir[i].checksum*2 + wdir[i].offset + wdir[i].length;
+    }
+    checksum &= 0xffffffff;
+    checksum = 0xb1b0afba - checksum;
 
     soff = 0;
     slen = HEADER_LEN;
@@ -201,6 +208,12 @@ write_sfnts(font *f, FILE *fout)
 	else
 	    b = loca;
 
+	if (i == TABLE_HEAD) {
+	    b[8] = (checksum>>24)&0xff;
+	    b[9] = (checksum>>16)&0xff;
+	    b[10] = (checksum>>8)&0xff;
+	    b[11] = checksum&0xff;
+	}
 	if (i == TABLE_GLYF && wdir[i].length > MAX_STRLEN) {
 	    loca = read_table(f, f->dir[TABLE_LOCA].offset,
 			      wdir[TABLE_LOCA].length);

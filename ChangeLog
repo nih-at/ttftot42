@@ -1,3 +1,7 @@
+1998-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* write_t42.c (write_sfnts): adjust font checksum in head table.
+
 1998-12-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c: include <unistd.h> (basename under Linux).
