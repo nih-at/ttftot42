@@ -97,7 +97,7 @@ open_font(char *fname, int what)
     f->ascender = SCALE(os2->sTypoAscender);
     f->descender = SCALE(os2->sTypoDescender);
 
-    f->tt_version = strdup("001.000"); /* otherwise FreeType wont open it */
+    f->tt_version = strdup("001.000"); /* FreeType only supports version 1.0 */
     f->version = (char *)malloc(8);
     sprintf(f->version, "%03ld.%03ld",
 	    hdr->Font_Revision >> 16,

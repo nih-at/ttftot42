@@ -1,3 +1,8 @@
+release 0.3:  
+
+* adjust font checksum in head table of included TrueType font.
+* omit duplicate entries for .notdef in CharStrings dictionary.
+
 release 0.2:  (1998/12/10)
 
 first public release

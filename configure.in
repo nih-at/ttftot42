@@ -2,14 +2,35 @@ AC_INIT(write_t42.c)
 AM_INIT_AUTOMAKE(ttftot42, 0.2a)
 AM_CONFIG_HEADER(config.h)
 
+AC_ARG_WITH(freetype,
+    [  --with-freetype=PREFIX  specify prefix for FreeType library],,
+    with_freetype=yes)
+
 # We want these before the checks, so the checks can modify their values.
 test -z "$CFLAGS" && CFLAGS='-g -Wall -I/usr/local/include' auto_cflags=1
 test -z "$LDFLAGS" && LDFLAGS='-L/usr/local/lib' auto_ldflags=1
+dnl test -z "$CFLAGS" && CFLAGS='-g -Wall' auto_cflags=1
 
 dnl AC_CANONICAL_HOST
 dnl AM_PROG_LIBTOOL
 AC_PROG_CC
 AM_PROG_INSTALL
+
+if test "$with_freetype" != "yes"
+then
+    if test -f "$with_freetype"/lib/freetype.h
+    then
+	# PREFIX is to uninstalled version in distribution directory
+	CFLAGS="$CFLAGS -I$with_freetype/lib"
+	LDFLAGS="$LDFLAGS -L$with_freetype/lib"
+    else if test -f "$with_freetype"/include/freetype.h
+    then
+	# PREFIX is installation prefix
+	CFLAGS="$CFLAGS -I$with_freetype/include"
+	LDFLAGS="$LDFLAGS -L$with_freetype/lib"
+    fi
+    fi
+fi
 
 AC_CHECK_LIB(ttf, TT_Open_Face)
 

@@ -1,4 +1,5 @@
 #include <ttobjs.h>
+#include <ttload.h>
 #include <tttables.h>
 
 
@@ -16,7 +17,7 @@ TT_Get_Num_Tables(TT_Face face)
 
 
 TT_Error
-TT_Get_Table_Entry(TT_Face face, int index,
+TT_Get_Table_Index(TT_Face face, ULong index,
 		   ULong *Tag, ULong *CheckSum, ULong *Offset, ULong *Length)
 {
     PFace f;
@@ -37,3 +38,22 @@ TT_Get_Table_Entry(TT_Face face, int index,
 
     return TT_Err_Ok;
 }
+
+
+
+TT_Error
+TT_Get_Table_Tag(TT_Face face, ULong Tag,
+		ULong *CheckSum, ULong *Offset, ULong *Length)
+{
+    Long index;
+    PFace f;
+
+    f = HANDLE_Face(face);
+
+    index = TT_LookUp_Table(f, Tag);
+    if (index == -1)
+	return TT_Err_Table_Not_Found;
+
+    return TT_Get_Table_Index(face, (ULong)index, CheckSum, Offset, Length);
+}
+

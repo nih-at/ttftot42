@@ -1,3 +1,9 @@
+1998-12-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* configure.in: new option --with-freetype, to specify either
+	installation prefix or distribution directory (if FreeType library
+	can't be found automatically).
+
 1998-12-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* write_t42.c (write_t42): omit duplicate entries for .notdef in
@@ -20,7 +26,7 @@
 
 1998-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
-	* write_afm.c (write_afm), open_font.c (open_font), * t42.h: added
+	* write_afm.c (write_afm), open_font.c (open_font), t42.h: added
 	ascender and descender.
 
 	* write_t42.c (write_strdef): omit FontInfo entries if string is
