@@ -1,6 +1,5 @@
 general
 
-! check CID references
 ! document CID/ACID format
 
 * xmalloc.h
