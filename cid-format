@@ -1,0 +1,149 @@
+							-*- text -*-
+
+CID file format:
+
+CID files store information to map TrueType Charmaps to CIDs of CID
+collections.  GSUB features are specified for vertical writing mode
+and alternate glyph forms.
+
+They are binary files.  All integers are stored unsigned and big
+endian.  They are composed of a pre-header, a header, and one or more
+charmaps.
+
+ulong are 4 bytes, ushort 2 bytes, and uchar 1 byte.  strings are
+stored as a ushort length field and the string (including terminating
+NUL char, padded to be short alligned).
+
+
+pre-header:
+
+char[4]		magic		magic to recognize CID files, value "CID0"
+uchar[2]	version		major/minor version, currently {1, 0}
+
+
+header:
+
+ulong		length		length of header (excluding length field)
+string		registry	registry of collection
+string		ordering	ordering of collection
+ushort		supplement	largest supplement supported
+ulong[nsup+1]	nchar		number of cids for each supplement
+ushort		nmaps		number of char maps
+
+
+charmap:
+
+ulong		length		length of map (excluding length field)
+ushort		platform-id	TrueType platform id
+ushort		encoding-id	TrueType platform specific encoding id
+ulong		nvert		number of GSUB features for vertical glyphs
+char[12*nvert]	vert		GSUB features for vertical glyphs
+ulong		nfeatures	number of GSUB features to apply
+char[12*nfeatures] features	GSUB features to apply to all glyphs
+ulong		nchar		number of chars in map (currently unused)
+ulong		ncode		number of codes in coded encoding
+ushort[ncode]	code		coded encoding (see below)
+
+
+coded encoding:
+
+The mapping of CIDs to code points (ushorts) in the specified TrueType
+charmap is encoded by a sequence of commands: the upper 3 bits of the
+command ushort specify the command, the lower 13 specify the length.
+Commands may be followed by arguments (the number of which depends on
+command and length).
+
+command	name	arguments	description
+
+0x0000	N	none		next <len> CIDs have no correspondence
+0x2000	O	<start>		next <len> CIDs correspond to <start>
+				through <start>+<len>-1, consecutively
+0x4000	OV	<start>		like O, but vert substitutions are to
+				be applied
+0x6000	L	<len>*<code>	next <len> CIDs correspond to codes
+				given as arguments
+0x8000	LV	<len>*<code>	like L, but vert substitutions are to
+				be applied
+0xa000	A	<len>*<code>	next CID corresponds to any of the
+				<len> codes given as argument (alternates)
+0xc000	AV	<len>*<code>	like A, but vert substitutions are to
+				be applied
+0xe000	AM     <vbits><len>*<c>	like A, but first argument specifies
+				for which codess vert substitutions
+				apply (corresponding bit set to 1).
+				<len> must not exceed 16
+
+
+
+ACID file format:
+
+ACID files are ASCII representations of the information contained in
+CID files.  Tools to convert between the two formats are provided in
+this package.  The general format of ACID files is similar to AFM
+files.  Unless otherwise stated, arguments are unsigned integers.
+
+
+StartCID <major-version>.<minor-version>
+EndCID
+	used to delimit an ACID file and tell its format version.
+	StartCID must be the first line in the file.  Current version
+	is 1.0
+
+
+The following entries must appear once in the file.
+
+Registry <registry-name>
+	Registry of collection; string
+
+Ordering <ordering-name>
+	Ordering of collection; string
+
+Supplements <max-sup> <max-sup>*<num-glyhps>
+	largest supported supplement and the number of glyphs in each
+	supplement
+
+StartCharmaps <num-charmaps>
+EndCharmaps
+	Delimits the Charmap sections and tells how many there are.
+	At least one Charmap section must be present.
+
+StartEncoding <num-cids>
+EndEncoding
+	Delimits the actual CID to code point correspondence
+	information (see below).  <num-cids> may be ommited.
+	
+
+<num-charmaps> of the following section must appear inside
+Start(End)Charmaps:
+
+StartCharmap <platform> <encoding>
+EndCharmap
+	Delimis each Charmap section and states the TrueType platform
+	and encoding id (as int or name).
+
+Vertical
+	Specify GSUB feature to applpy for vertical writing mode; may
+	appear more than once.
+
+Feature
+	Specify GSUB feature to applpy to all glyphs; may appear more
+	than once.
+
+
+<num-cids> (or any number if <num-cids> is ommited) of these must
+occur in the Start(End)Encoding section:
+
+CID <cid> <num-charmaps>*<code-string>
+	Specify correspondence of CID <cid> to code points in each of
+	the specified charmaps (in order of appearnce earlier in the
+	file).
+
+	<cid>s have to be listed in ascending order.  If <cid>s are
+	ommited, they are treated as having no correspondence.
+
+	<code-string> is either `*' if it has no correspondence, or
+	the code point in hexadecimal, preceeded by `0x' and suffixed
+	with `v' if Vertical substitutions are to be applied.  If more
+	than one correspondence exist, they are concatenated,
+	separated by `,' without white space (since white space
+	delimits code strings).

@@ -1,3 +1,7 @@
+release 0.3.1: (1999/03/08)
+
+* fixed bug in afm generation (caused segfaults)
+
 release 0.3:  (1999/01/04)
 
 * handle ISOLatin1 and PDFDoc encodings
