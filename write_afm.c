@@ -280,9 +280,12 @@ make_kern(font *f, struct kern **k)
 		return 0;
 	    
 	    for (j=i=0; i<k0.nPairs; i++) {
+		if (k0.pairs[i].value == 0)
+		    continue;
+
 		TT_Get_PS_Name(f->face, k0.pairs[i].left, &n1);
 		TT_Get_PS_Name(f->face, k0.pairs[i].right, &n2);
-		
+
 		if (strcmp(n1, ".notdef") == 0 || strcmp(n2, ".notdef") == 0)
 		    continue;
 
