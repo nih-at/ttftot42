@@ -133,13 +133,26 @@ open_font(char *fname, int what, int type)
 		hdr->Font_Revision >> 16,
 		((hdr->Font_Revision & 0xffff)*1000)/0x10000);
     
+    f->full_name = get_name(f->face, f->nnames, TT_NAME_ID_FULL_NAME);
     f->font_name = get_name(f->face, f->nnames, TT_NAME_ID_PS_NAME);
+    if (f->font_name == NULL) {
+	/* Fall back to full name if no PS name specified. */
+	if (f->full_name == NULL) {
+	    fprintf (stderr, "%s: %s: missing FontName and FullName\n",
+		     prg, fname);
+	    close_font(f);
+	    return NULL;
+	}
+	fprintf (stderr, "%s: %s: warning: missing FontName\n", prg, fname);
+	f->font_name = strdup(f->full_name);
+    }
+    /* Remove illegal characters from the font name. 
+       Actually, the spec only requires spaces to be removed. */
     for (j=i=0; i<strlen(f->font_name); i++) {
 	if (!strchr(" \t\n\r()<>[]/%", f->font_name[i]))
 	    f->font_name[j++] = f->font_name[i];
     }
     f->font_name[j] = '\0';
-    f->full_name = get_name(f->face, f->nnames, TT_NAME_ID_FULL_NAME);
     f->family_name = get_name(f->face, f->nnames, TT_NAME_ID_FONT_FAMILY);
     /* XXX: the following is wrong */
     f->notice = get_name(f->face, f->nnames, TT_NAME_ID_COPYRIGHT);
