@@ -100,6 +100,7 @@ main(int argc, char **argv)
 	exit(1);
     }
 
+    ret = 0;
     for (; optind < argc; optind++) {
 	if ((cid=cid_aread(argv[optind])) == NULL) {
 	    ret = 1;

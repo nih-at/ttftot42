@@ -102,6 +102,7 @@ main(int argc, char **argv)
 	exit(1);
     }
 
+    ret = 0;
     for (; optind < argc; optind++) {
 	if ((cid=cid_read(argv[optind])) == NULL) {
 	    /* XXX: should error output be done in cid_read? */
