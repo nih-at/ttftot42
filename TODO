@@ -1,14 +1,15 @@
 general
 
-* done (destroy fte &c)
+! done (destroy fte &c)
 * use xmalloc
 * handle other encodings
-* references
+! references
 - TrueType collections
 - CID keyed t42 fonts
 
 both
 
+! validate lexical correctness
 * version vs. font_revision
 * Weight (subfamily is wrong)
 - XUID
@@ -20,7 +21,7 @@ afm
 t42
 
 * PaintType (how to recognize 2, StrokeWidth)
-* fix checksums
-* split long glyf table
+! fix checksums
+! split long glyf table
 * detect missing or too long tables
 - embed full font (--full)
