@@ -17,9 +17,8 @@ PostScript font dictionary; this format is called Type 42 fonts.
 can also generate Adobe Font Metrics files (AFM files), including
 kerning information.
 
-  Not yet supported are selecting fonts from TrueType Collections (the
-first font is used) and the creation of CID keyed fonts from large
-TrueType fonts (East Asian or Unicode fonts).
+  Not yet supported are TrueType Collections and the creation of CID
+keyed fonts from large TrueType fonts (East Asian or Unicode fonts).
 
 
   If you make a binary distribution, please include a pointer to the
