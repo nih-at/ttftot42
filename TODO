@@ -1,0 +1,18 @@
+general
+
+* autoconfiscate, gnu standards compliance
+* handle other encodings
+
+both
+
+* Weight (subfamily is wrong)
+* XUID
+
+afm
+
+* CapHeight, XHeight, Ascender, Descender, StdHW, StdVW
+
+t42
+
+* PaintType (how to recognize 2, StrokeWidth)
+* sfnts (minimal & full font)
