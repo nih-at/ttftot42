@@ -1,5 +1,5 @@
 /*
-  init -- initialization (of FreeType et. al.)
+   -- 
   Copyright (C) 1998 Dieter Baron
 
   This file is part of otftot42, to use TrueType fonts in PostScript.
@@ -22,19 +22,3 @@
 
 
 
-#include <ftxpost.h>
-#include <ftxkern.h>
-
-#include "t42.h"
-
-TT_Engine fte;
-
-int
-init(void)
-{
-    TT_Init_FreeType(&fte);
-    TT_Init_Post_Extension(fte);
-    TT_Init_Kerning_Extension(fte);
-
-    return 0;
-}
