@@ -72,8 +72,8 @@ open_font(char *fname, int what, int type)
     os2 = prop.os2;
     ps = prop.postscript;
 
-    f->gsub = NULL;
 #ifdef HAVE_GSUB
+    f->gsub = NULL;
     if (type & TYPE_CID) {
 	TTO_GSUBHeader foo;
 
