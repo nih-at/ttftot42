@@ -1,3 +1,7 @@
+1998-12-12  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c: include <unistd.h> (basename under Linux).
+
 1998-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* write_afm.c (write_afm), open_font.c (open_font), * t42.h: added

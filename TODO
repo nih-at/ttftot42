@@ -3,6 +3,7 @@ general
 * use xmalloc
 * handle other encodings
 * documentation
+* lsm entry
 - TrueType collections
 - CID keyed t42 fonts
 
