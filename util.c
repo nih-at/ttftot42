@@ -187,7 +187,7 @@ write_sfnts(font *f, FILE *fout)
 static int
 write_tabledir_entry(FILE *fout, struct table *t)
 {
-    fprintf(fout, "%02.2X%02.2X%02.2X%02.2X%08.8lX%08.8lX%08.8lX\n",
+    fprintf(fout, "%2.2X%2.2X%2.2X%2.2X%8.8lX%8.8lX%8.8lX\n",
 	    t->tag[0], t->tag[1], t->tag[2], t->tag[3],
 	    t->checksum & 0xffffffff,
 	    t->offset & 0xffffffff,
