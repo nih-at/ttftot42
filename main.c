@@ -54,8 +54,10 @@ char help_string[] = "\
   -f, --font            write t42 file\n\
   -o, --output file     output to file\n\
   -c, --stdout          output to standard output\n\
-  -e, --encoding enc    encoding to use (std, pdf, mac, latin1, font)\n\
-  -F, --full            include full TrueType font\n\
+  -e, --encoding enc    encoding to use (std, pdf, mac, latin1, font)*\n\
+  -F, --full            include full TrueType font*\n\
+\n\
+*: not yet implemented\n
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 

@@ -8,7 +8,7 @@ general
 both
 
 * error handling (e. g. write error)
-! validate lexical correctness
+* validate lexical correctness of glyph names
 * version vs. font_revision
 * Weight (subfamily is wrong)
 - XUID
@@ -21,5 +21,6 @@ t42
 
 * PaintType (how to recognize 2, StrokeWidth)
 * fix checksums (how?!)
-* detect missing or too long tables
+* remove duplicat definition of .notdef in CharStrings
+* detect missing tables
 - embed full font (--full)

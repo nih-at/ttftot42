@@ -30,6 +30,9 @@
 #include "config.h"
 #include "t42.h"
 
+static void write_string(FILE *fout, char *s);
+static void write_strdef(FILE *fout, char *n, char *s);
+
 static int write_sfnts(font *f, FILE *fout);
 static int write_tabledir_entry(FILE *fout, struct table *t);
 static int write_table(FILE *f, unsigned char *b, unsigned long length,
@@ -83,11 +86,11 @@ write_t42(font *f, FILE *fout)
     /* fontinfo */
 
     fputs("/FontInfo 9 dict dup begin\n", fout);
-    fprintf(fout, "/version (%s) readonly def\n", f->version);
-    fprintf(fout, "/Notice (%s) readonly def\n", f->notice);
-    fprintf(fout, "/FullName (%s) readonly def\n", f->full_name);
-    fprintf(fout, "/FamilyName (%s) readonly def\n", f->family_name);
-    fprintf(fout, "/Weight (%s) readonly def\n", f->weight);
+    write_strdef(fout, "version", f->version);
+    write_strdef(fout, "Notice", f->notice);
+    write_strdef(fout, "FullName", f->full_name);
+    write_strdef(fout, "FamilyName", f->family_name);
+    write_strdef(fout, "Weight", f->weight);
     fprintf(fout, "/ItalicAngle %s def\n", f->italic_angle);
     fprintf(fout, "/isFixedPitch %s def\n",
 	    f->is_fixed_pitch ? "true" : "false");
@@ -106,6 +109,7 @@ write_t42(font *f, FILE *fout)
 
     fprintf(fout, "/CharStrings %d dict dup begin\n", f->nglyph);
     for (i=0; i<f->nglyph; i++) {
+	/* XXX: ensure syntactic correctness */
 	TT_Get_PS_Name(f->face, i, &name);
 	fprintf(fout, "/%s %d def\n", name, i);
     }
@@ -117,6 +121,47 @@ write_t42(font *f, FILE *fout)
 
     return 0;
 }
+
+
+
+static void
+write_string(FILE *fout, char *s)
+{
+    int i, l, p;
+
+    l = strlen(s);
+
+    p = 0;
+    for (i=0; i<l; i++) {
+	if (s[i] == '(')
+	    p++;
+	else if (s[i] == ')')
+	    if (--p < 0)
+		break;
+    }
+
+    if (p == 0)
+	fputs(s, fout);
+    else
+	for (i=0; i<l; i++) {
+	    if (s[i] == '(' || s[i] == ')')
+		putc('\\', fout);
+	    putc(s[i], fout);
+	}
+
+    return;
+}
+
+
+
+static void
+write_strdef(FILE *fout, char *n, char *s)
+{
+    fprintf(fout, "/%s (", n);
+    write_string(fout, s);
+    fprintf(fout, ") readonly def\n");
+}
+
 
 
 

@@ -40,7 +40,7 @@ font *
 open_font(char *fname, int what)
 {
     font *f;
-    int err;
+    int err, i, j;
 
     TT_Face face;
     TT_Face_Properties prop;
@@ -82,13 +82,17 @@ open_font(char *fname, int what)
     f->underline_thickness = ps->underlineThickness;
     f->is_fixed_pitch = ps->isFixedPitch;
 
-    f->tt_version = strdup("001.000"); /* otherwise freetype wont open it */
+    f->tt_version = strdup("001.000"); /* otherwise FreeType wont open it */
     f->version = (char *)malloc(8);
     sprintf(f->version, "%03ld.%03ld",
 	    hdr->Font_Revision >> 16,
 	    ((hdr->Font_Revision & 0xffff)*1000)/0x10000);
 
     f->font_name = get_name(f->face, f->nnames, TT_NAME_ID_PS_NAME);
+    for (j=i=0; i<strlen(f->font_name); i++) {
+	if (!strchr(" \t\n\r()<>[]/%", f->font_name[i]))
+	    f->font_name[j++] = f->font_name[i];
+    }
     f->full_name = get_name(f->face, f->nnames, TT_NAME_ID_FULL_NAME);
     f->family_name = get_name(f->face, f->nnames, TT_NAME_ID_FONT_FAMILY);
     /* XXX: the following is wrong */
