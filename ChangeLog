@@ -1,3 +1,8 @@
+1998-12-16  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* write_t42.c (write_t42): omit duplicate entries for .notdef in
+	CharStrings.
+
 1998-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c, t42.h: moved conditional declaration of basename to

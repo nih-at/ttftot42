@@ -53,7 +53,7 @@ write_t42(font *f, FILE *fout)
 /FontType 42 def\n\
 /FontMatrix [1 0 0 1 0 0] def\n";
 
-    int i;
+    int i, had_notdef;
     char *name;
     time_t fuck_ctime;
 
@@ -107,10 +107,17 @@ write_t42(font *f, FILE *fout)
 
     /* CharStrings */
 
+    had_notdef = 0;
     fprintf(fout, "/CharStrings %d dict dup begin\n", f->nglyph);
     for (i=0; i<f->nglyph; i++) {
 	/* XXX: ensure syntactic correctness */
 	TT_Get_PS_Name(f->face, i, &name);
+	if (strcmp(name, ".notdef") == 0) {
+	    if (!had_notdef)
+		had_notdef = 1;
+	    else
+		continue;
+	}
 	fprintf(fout, "/%s %d def\n", name, i);
     }
     fputs("end readonly def\n", fout);

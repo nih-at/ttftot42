@@ -1,5 +1,6 @@
 general
 
+! check for/include libgen.h
 * use xmalloc
 * handle other encodings
 * documentation
@@ -24,7 +25,6 @@ afm
 t42
 
 * PaintType (how to recognize 2, StrokeWidth)
-* remove duplicate definitions of .notdef in CharStrings
 * detect missing tables
 * read glyf table in parts, use static buffer for tables
 - embed full font (--full)
