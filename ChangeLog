@@ -1,3 +1,10 @@
+1999-01-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c (write_sfnts): fixed bug (omitting newline when last line
+	full).
+
+	* get_name.c (get_name): accept only english mac names.
+
 1999-01-09  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* write_cid2.c (write_cid2): added DSC comments.

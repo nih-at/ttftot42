@@ -3,7 +3,8 @@
   This is ttftot42, a program to facilitate using TrueType fonts on
 PostScript interpreters with TrueType rasterizer.
 
-  You need the FreeType library to compile and use it.
+  You need the FreeType library to compile and use it, which can be
+found at <http://www.freetype.org/>.
 
 
   TrueType fonts cannot be converted to Type 1 fonts without loss of

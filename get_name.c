@@ -61,7 +61,9 @@ get_name(TT_Face f, int nnames, int name)
 	TT_Get_Name_ID(f, i, &pid, &eid, &lid, &nid);
 
 	if (nid == name) {
-	    if (((pid == TT_PLATFORM_MACINTOSH && eid == TT_MAC_ID_ROMAN)
+	    if (((pid == TT_PLATFORM_MACINTOSH
+		  && eid == TT_MAC_ID_ROMAN
+		  && lid == TT_MAC_LANGID_ENGLISH)
 		 || (pid == TT_PLATFORM_MICROSOFT
 		     && eid == TT_MS_ID_UNICODE_CS))) {
 		TT_Get_Name_String(f, i, &p, &len);

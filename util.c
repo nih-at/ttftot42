@@ -164,7 +164,7 @@ write_sfnts(font *f, FILE *fout)
 	free(b);
     }
 
-    if (offset % LINE_LEN != 0)
+    if (soff % LINE_LEN != 0)
 	fputc('\n', fout);
     fputs("00>]def\n", fout);
     /* printf("DEBUG: slen=%d\n", slen); */
