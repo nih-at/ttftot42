@@ -1,3 +1,22 @@
+1999-01-03  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* write_t42.c (write_t42): generate Encoding array.
+
+	* write_afm.c (write_afm): derive EncodingScheme from encoding
+	argument.
+
+	* main.c (main): handle --encoding option.
+
+	* t42.h (struct encoding) new struct.
+	* t42.h (struct rev_enc) moved from write_afm.h, renamed from
+	struct code.
+	* encodings.c: new file; replaces enc_standard.c
+	* write_afm.c (make_revenc): renamed from make_code, changed to
+	use struct encoding.
+	(make_glyph): changed to use struct encoding.
+	(write_afm): new argument encoding, changed callers.
+	* write_t42.c: new argument encoding, changed callers.
+	
 1999-01-02  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* main.c (main): close output files.

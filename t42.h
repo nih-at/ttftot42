@@ -108,11 +108,25 @@ struct font {
 
 typedef struct font font;
 
+struct rev_enc {
+    char *name;
+    int code;
+};
+
+struct encoding {
+    char *name, *full_name;
+    int builtinp;
+    char **vector;
+    struct rev_enc *reverse;
+    int nreverse;
+};
+
 
 
 extern char *prg;
 extern TT_Engine fte;
-extern char *enc_standard[256];
+extern struct encoding encoding[];
+extern int nencoding;
 
 
 
@@ -123,7 +137,7 @@ int done(void);
 font *open_font(char *fname, int what);
 void close_font(font *f);
 char *get_name(TT_Face f, int nnames, int name);
-int write_t42(font *f, FILE *fout);
-int write_afm(font *f, FILE *fout);
+int write_t42(font *f, FILE *fout, struct encoding *encoding);
+int write_afm(font *f, FILE *fout, struct encoding *encoding);
 
 #endif /* t42.h */

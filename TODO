@@ -1,7 +1,7 @@
 general
 
 * use xmalloc
-* handle other encodings
+* handle encodings MacRoman and FontSpecific
 * documentation
 - TrueType collections
 - CID keyed t42 fonts
@@ -17,13 +17,14 @@ both
 
 afm
 
-! sort encoding vector only once
 * CapHeight, XHeight (OS/2)
 * StdHW, StdVW
+* handle encodings with glyphs encoded more than once (e. g. ISOLatin1)
 
 t42
 
 * PaintType (how to recognize 2, StrokeWidth)
 * detect missing tables
 * read glyf table in parts, use static buffer for tables
+* put only glyphs in encoding array that are present in font
 - embed full font (--full)

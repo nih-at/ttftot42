@@ -92,10 +92,10 @@ main(int argc, char **argv)
 {
     extern int opterr, optind;
     extern char *optarg;
+    struct encoding *enc;
 
-    int err;
+    int err, i;
     int c, what, full, cat;
-    char *encoding;
     char *outfile;
     font *f;
     FILE *fout;
@@ -105,7 +105,7 @@ main(int argc, char **argv)
     prg = argv[0];
 
     cat = full = what = 0;
-    encoding = "std";
+    enc = &encoding[0];
     outfile = NULL;
 
     opterr = 0;
@@ -127,7 +127,18 @@ main(int argc, char **argv)
 	    full = 1;
 	    break;
 	case 'e':
-	    encoding = optarg;
+	    for (i=0; i<nencoding; i++) {
+		if (strcmp(optarg, encoding[i].name) == 0) {
+		    enc = &encoding[i];
+		    break;
+		}
+	    }
+	    if (i == nencoding) {
+		fprintf(stderr, "%s: unknown encoding `%s'\n",
+			prg, optarg);
+		exit(1);
+	    }
+	    break;
 	case 'o':
 	    outfile = optarg;
 	    break;
@@ -223,7 +234,7 @@ main(int argc, char **argv)
 		outfile = NULL;
 	    }
 	    if (fout) {
-		write_afm(f, fout);
+		write_afm(f, fout, enc);
 		fclose(fout);
 	    }
 	}
@@ -247,7 +258,7 @@ main(int argc, char **argv)
 		outfile = NULL;
 	    }
 	    if (fout) {
-		write_t42(f, fout);
+		write_t42(f, fout, enc);
 		fclose(fout);
 	    }
 	}

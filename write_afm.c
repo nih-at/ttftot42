@@ -38,11 +38,6 @@ struct glyph {
     int code;
 };
 
-struct code {
-    char *name;
-    int code;
-};
-
 struct kern {
     char *n1, *n2;
     int k;
@@ -51,21 +46,20 @@ struct kern {
 typedef int (*compfunc)(const void *, const void *);
 typedef int (*searchfunc) (const void *, const void *);
 
-static int make_code(char **encoding, struct code *code);
-static int make_glyph(font *f, struct code *code, struct glyph **glyphp);
+static int make_revenc(struct encoding *encoding);
+static int make_glyph(font *f, struct encoding *enc, struct glyph **glyphp);
 static int make_kern(font *f, struct kern **kernp);
 
 
 
 int
-write_afm(font *f, FILE *fout)
+write_afm(font *f, FILE *fout, struct encoding *encoding)
 {
     static char *fixpart = "\
 StartFontMetrics 4.1\n\
 Comment Creator: " PACKAGE " " VERSION "\n";
 
     TT_Glyph_Metrics metrics;
-    struct code code[256];
     struct glyph *glyph;
     struct kern *kern;
     int nkern, nglyph;
@@ -95,8 +89,10 @@ Comment Creator: " PACKAGE " " VERSION "\n";
     fprintf(fout, "UnderlineThickness %d\n", f->underline_thickness);
     fprintf(fout, "Version %s\n", f->version);
     fprintf(fout, "Notice %s\n", f->notice);
-    /* XXX: handle other encodings */
-    fputs("EncodingScheme AdobeStandardEncoding\n", fout);
+    if (strcmp(encoding->full_name, "StandardEncoding") == 0)
+	fputs("EncodingScheme AdobeStandardEncoding\n", fout);
+    else
+	fprintf(fout, "EncodingScheme %s\n", encoding->full_name);
     /* XXX: CapHeight */
     /* XXX: XHeight */
     fprintf(fout, "Ascender %d\n", f->ascender);
@@ -107,8 +103,8 @@ Comment Creator: " PACKAGE " " VERSION "\n";
 
     /* char metrics */
 
-    make_code(enc_standard, code);
-    nglyph = make_glyph(f, code, &glyph);
+    make_revenc(encoding);
+    nglyph = make_glyph(f, encoding, &glyph);
     fprintf(fout, "StartCharMetrics %d\n", nglyph);
     for (i=0; i<nglyph; i++) {
         TT_Load_Glyph(f->fi, f->fg, glyph[i].index, 0);
@@ -159,22 +155,32 @@ Comment Creator: " PACKAGE " " VERSION "\n";
 
 
 static int
-code_cmp(struct code *c1, struct code *c2)
+code_cmp(struct rev_enc *c1, struct rev_enc *c2)
 {
     return strcmp(c1->name, c2->name);
 }
 
 static int
-make_code(char **encoding, struct code *code)
+make_revenc(struct encoding *encoding)
 {
-    int i;
+    int i, j;
 
-    for (i=0; i<256; i++) {
-	code[i].name = encoding[i];
-	code[i].code = i;
+    /* XXX: encodings with multiply encoded glyphs are not handled properly */
+
+    if (encoding->reverse != NULL)
+	return 0;
+
+    encoding->reverse = (struct rev_enc *)xmalloc(sizeof(struct rev_enc));
+
+    for (i=j=0; i<256; i++) {
+	if (encoding->vector[i]) {
+	    encoding->reverse[j].name = encoding->vector[i];
+	    encoding->reverse[j++].code = i;
+	}
     }
+    encoding->nreverse = j;
 
-    qsort(code, 256, sizeof(struct code), (compfunc)code_cmp);
+    qsort(encoding->reverse, j, sizeof(struct rev_enc), (compfunc)code_cmp);
 
     return 0;
 }
@@ -191,17 +197,17 @@ glyph_cmp(struct glyph *c1, struct glyph *c2)
 }
 
 static int
-code_find(char *k, struct code *c)
+code_find(char *k, struct rev_enc *c)
 {
     return strcmp(k, c->name);
 }
 
 static int
-make_glyph(font *f, struct code *code, struct glyph **g)
+make_glyph(font *f, struct encoding *enc, struct glyph **g)
 {
     int i, j;
     struct glyph *glyph;
-    struct code *c;
+    struct rev_enc *c;
 
     if ((glyph=(struct glyph *)malloc(sizeof(struct glyph)*f->nglyph)) == NULL)
 	return 0;
@@ -211,8 +217,8 @@ make_glyph(font *f, struct code *code, struct glyph **g)
 	if (strcmp(glyph[j].name, ".notdef") == 0)
 	    continue;
 	glyph[j].index = i;
-	c = bsearch(glyph[j].name, code, 256, sizeof(struct code),
-		    (searchfunc)code_find);
+	c = bsearch(glyph[j].name, enc->reverse, enc->nreverse,
+		    sizeof(struct rev_enc), (searchfunc)code_find);
 	if (c)
 	    glyph[j].code = c->code;
 	else

@@ -47,7 +47,7 @@ static unsigned char *read_table(font *f, unsigned long offset,
 
 
 int
-write_t42(font *f, FILE *fout)
+write_t42(font *f, FILE *fout, struct encoding *encoding)
 {
     static char *fixpart = "\
 /FontType 42 def\n\
@@ -101,8 +101,18 @@ write_t42(font *f, FILE *fout)
 
     /* encoding */
 
-    /* XXX: handle other encodings */
-    fprintf(fout, "/Encoding StandardEncoding def\n");
+    if (encoding->builtinp)
+	fprintf(fout, "/Encoding %s def\n", encoding->full_name);
+    else {
+	/* XXX: put only glyph actually contained in font in encoding array */
+	fputs("/Encoding 256 array\n", fout);
+	fputs("0 1 255 { 1 index exch /.notdef put } for\n", fout);
+	for (i=0; i<256; i++) {
+	    if (encoding->vector[i])
+		fprintf(fout, "dup %d /%s put\n", i, encoding->vector[i]);
+	}
+	fputs("readonly def\n", fout);
+    }
 
 
     /* CharStrings */
