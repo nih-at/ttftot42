@@ -1,6 +1,6 @@
 /*
   write_afm -- write AFM file
-  Copyright (C) 1998 Dieter Baron
+  Copyright (C) 1998, 1999 Dieter Baron
 
   This file is part of ttftot42, to use TrueType fonts in PostScript.
   The author can be contacted at <dillo@giga.or.at>

@@ -1,6 +1,6 @@
 /*
   strerror -- get error message string
-  Copyright (C) 1996, 1997, 1998 Dieter Baron
+  Copyright (C) 1996, 1997, 1998, 1999 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
 

@@ -1,6 +1,6 @@
 /*
   main -- main function
-  Copyright (C) 1998 Dieter Baron
+  Copyright (C) 1998, 1999 Dieter Baron
 
   This file is part of ttftot42, to use TrueType fonts in PostScript.
   The author can be contacted at <dillo@giga.or.at>
@@ -37,7 +37,7 @@ char *prg;
 
 char version_string[] = 
 PACKAGE " " VERSION "\n\
-Copyright (C) 1998 Dieter Baron\n"
+Copyright (C) 1998, 1999 Dieter Baron\n"
 PACKAGE " comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of\n"
 PACKAGE " under the terms of the GNU General Public License.\n\
