@@ -27,8 +27,15 @@
 #include <limits.h>
 #include <ctype.h>
 
+#include "config.h"
+
+#ifdef HAVE_FREETYPE_FREETYPE_H
+#include <freetype/ftxpost.h>
+#include <freetype/ftxerr18.h>
+#else
 #include <ftxpost.h>
 #include <ftxerr18.h>
+#endif
 
 #include "t42.h"
 

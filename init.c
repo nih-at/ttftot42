@@ -22,8 +22,15 @@
 
 
 
+#include "config.h"
+
+#ifdef HAVE_FREETYPE_FREETYPE_H
+#include <freetype/ftxpost.h>
+#include <freetype/ftxkern.h>
+#else
 #include <ftxpost.h>
 #include <ftxkern.h>
+#endif
 
 #include "t42.h"
 
