@@ -1,0 +1,31 @@
+						-*- text -*-
+
+  This is otftot42, a program to faciliate using OpenType fonts on
+PostScript interperters with OpenType rasterizer.
+
+  You need the FreeType library to compile and use it.
+
+  OpenType fonts cannot be converted to Type 1 fonts without loss of
+quality, since the curves used to describe outlines are incompatible.
+Therefore, newer PostScript interpreters (Adobe PostScript since
+version 2013, ghostscript since 5.03 (XXX: correct versions)) include
+a OpenType rasterizers.  To use a OpenType font with them, they have
+to be embeded in a PostScript font dictionary; this format is called
+Type 42 fonts.
+
+  This program generates such Type 42 fonts from OpenType fonts.  It
+can also generate Adobe Font Metrics files (AFM files), including
+kerning information.
+
+  Not yet supported are TrueType Collections, the creation of CID
+keyed fonts from large OpenType fonts (East Asian or Unicode fonts),
+and OpenType fonts wit CFF data.
+
+
+  If you make a binary distribution, please include a pointer to the
+distribution site:
+	ftp.giga.or.at /pub/nih/otftot42
+	http://ftp.giga.or.at/pub/nih/otftot42
+The latest version can always be found there.
+
+Mail suggestions and bug reports to <dillo@giga.or.at>.
