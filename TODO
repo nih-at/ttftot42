@@ -7,6 +7,7 @@ general
 * --with-freetype=prefix
 - TrueType collections
 - CID keyed t42 fonts
+- subsetting
 
 both
 
@@ -25,4 +26,5 @@ t42
 * PaintType (how to recognize 2, StrokeWidth)
 * remove duplicate definitions of .notdef in CharStrings
 * detect missing tables
+* read glyf table in parts, use static buffer for tables
 - embed full font (--full)

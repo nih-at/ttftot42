@@ -1,6 +1,6 @@
 						-*- text -*-
 
-  This is ttftot42, a program to faciliate using TrueType fonts on
+  This is ttftot42, a program to facilitate using TrueType fonts on
 PostScript interpreters with TrueType rasterizer.
 
   You need the FreeType library to compile and use it.
@@ -10,7 +10,7 @@ PostScript interpreters with TrueType rasterizer.
 quality, since the curves used to describe outlines are incompatible.
 Therefore, newer PostScript interpreters (Adobe PostScript since
 version 2013, ghostscript since 5.03) include a TrueType rasterizers.
-To use a TrueType font with them, they have to be embeded in a
+To use a TrueType font with them, they have to be embedded in a
 PostScript font dictionary; this format is called Type 42 fonts.
 
   This program generates such Type 42 fonts from TrueType fonts.  It
