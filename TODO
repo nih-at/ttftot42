@@ -7,6 +7,7 @@ general
 
 both
 
+! error handling
 ! validate lexical correctness
 * version vs. font_revision
 * Weight (subfamily is wrong)
@@ -21,6 +22,5 @@ t42
 * PaintType (how to recognize 2, StrokeWidth)
 ! check whether Adobe accepts wrong checksum
 * fix checksums (how?!)
-! split long glyf table
 * detect missing or too long tables
 - embed full font (--full)

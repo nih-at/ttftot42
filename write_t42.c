@@ -37,13 +37,17 @@ struct table {
     unsigned long length;
 };
 
-static int read_dir(font *f, struct table **dirp);
-static unsigned char *read_table(font *f, unsigned long offset,
-				 unsigned long length);
 static int write_sfnts(font *f, FILE *fout);
 static int write_tabledir_entry(FILE *fout, struct table *t);
 static int write_table(FILE *f, unsigned char *b, unsigned long length,
-		       unsigned long *strlen, unsigned long *offset);
+		       int *strlen, int *offset);
+static int write_glyf(FILE *fout, font *f, unsigned char *b,
+		      unsigned char *loca, unsigned long length,
+		      int *slen, int *offset);
+
+static int read_dir(font *f, struct table **dirp);
+static unsigned char *read_table(font *f, unsigned long offset,
+				 unsigned long length);
 
 
 
@@ -128,6 +132,8 @@ write_t42(font *f, FILE *fout)
 #define LINE_LEN    36       /* length of one line (in bytes) */
 #define HEADER_LEN  12+9*16  /* length of header and table directory */
 #define TABLE_GLYF  2        /* index of glyf table in table_names */
+#define TABLE_HEAD  3        /* index of head table */
+#define TABLE_LOCA  6        /* index of loca table */
 
 static int
 write_sfnts(font *f, FILE *fout)
@@ -137,12 +143,12 @@ write_sfnts(font *f, FILE *fout)
     };
     static char *fixpart = "/sfnts[<\n00010000""0009""0080""0003""0010\n";
 
-    int ntables, i, j;
-    unsigned long offset, length;
+    int ntables, i, j, slen, soff;
+    unsigned long offset;
     struct table *fdir;    /* full dir */
     struct table sdir[9];  /* shortened dir */
     struct table wdir[9];  /* dir ready for writing */
-    unsigned char *head, *b;
+    unsigned char *loca, *b;
 
     fputs(fixpart, fout);
 
@@ -156,27 +162,47 @@ write_sfnts(font *f, FILE *fout)
 	    wdir[j].offset = offset+HEADER_LEN;
 	    offset += (sdir[j].length+3) & ~3;
 
+	    if (j != TABLE_GLYF && wdir[j].length > MAX_STRLEN) {
+		/* XXX: table too long */
+		free(fdir);
+		return -1;
+	    }
+	    
 	    j++;
 	}
     }
     /* XXX: check for missing table */
 
+    
     /* XXX: adjust head checksum & font checksum in head table */
 
     for (i=0; i<9; i++)
 	write_tabledir_entry(fout, wdir+i);
 
-    /* XXX: special treatment of long glyf table */
-    offset = 0;
-    length = HEADER_LEN;
+    soff = 0;
+    slen = HEADER_LEN;
+    loca = NULL;
     for (i=0; i<9; i++) {
-	b = read_table(f, sdir[i].offset, sdir[i].length);
-	write_table(fout, b, sdir[i].length, &length, &offset);
+	if (i != TABLE_LOCA || loca == NULL)
+	    b = read_table(f, sdir[i].offset, sdir[i].length);
+	else
+	    b = loca;
+
+	if (i == TABLE_GLYF && sdir[i].length > MAX_STRLEN) {
+	    loca = read_table(f, sdir[TABLE_LOCA].offset,
+			      sdir[TABLE_LOCA].length);
+	    write_glyf(fout, f, b, loca, sdir[i].length,
+			&slen, &soff);
+	}
+	else
+	    write_table(fout, b, sdir[i].length, &slen, &soff);
+	free(b);
     }
 
     if (offset % LINE_LEN != 0)
 	fputc('\n', fout);
     fputs("00>]def\n", fout);
+    printf("DEBUG: slen=%d\n", slen);
 
     return 0;
 }
@@ -197,16 +223,16 @@ write_tabledir_entry(FILE *fout, struct table *t)
 
 static int
 write_table(FILE *fout, unsigned char *b, unsigned long length,
-	    unsigned long *strlen, unsigned long *offset)
+	    int *slen, int *offset)
 {
     int i;
-    if (*strlen+length > MAX_STRLEN) {
+    if (*slen+length > MAX_STRLEN) {
 	if (*offset % LINE_LEN != 0)
 	    fputc('\n', fout);
+	printf("DEBUG: *slen=%d\n", *slen);
 	fputs("00><\n", fout);
-	*strlen = *offset = 0;
+	*slen = *offset = 0;
     }
-    /* XXX: check for overly long tables */
     
     for (i=0; i<length; i++) {
 	fprintf(fout, "%02X", b[i]);
@@ -222,11 +248,63 @@ write_table(FILE *fout, unsigned char *b, unsigned long length,
 	}
     }
     
-    *strlen += (length+3) & ~3;
+    *slen += (length+3) & ~3;
 
     return 0;
 }
 
+
+
+static int
+write_glyf(FILE *fout, font *f, unsigned char *b, unsigned char *loca,
+	   unsigned long length, int *slen, int *offset)
+{
+    int i, len;
+    unsigned long off, start, off_old, j;
+
+    len = *slen;
+    start = 0;
+    off_old = 0;
+    for (i=0; i<=f->nglyph; i++) {
+	if (f->long_loc)
+	    off = (((((loca[i*4]<<8)+loca[i*4+1])<<8)
+		    +loca[i*4+2])<<8)+loca[i*4+3];
+	else
+	    off = ((loca[i*2]<<8)+loca[i*2+1])*2;
+	if (len+(off-start) > MAX_STRLEN) {
+	    for (j=start; j<off_old; j++) {
+		fprintf(fout, "%02X", b[j]);
+		if (++(*offset) % LINE_LEN == 0)
+		    fputc('\n', fout);
+	    }
+	    if (*offset % LINE_LEN != 0)
+		fputc('\n', fout);
+	    fputs("00><\n", fout);
+	    printf("DEBUG: len=%d\n", (int)(len+off_old-start));
+	    len = *offset = 0;
+
+	    start = off_old;
+	}
+	off_old = off;
+    }
+
+    /* doesn't work if the whole glyf table fits in existing string */
+    for (j=start; j<length; j++) {
+	fprintf(fout, "%02X", b[j]);
+	if (++(*offset) % LINE_LEN == 0)
+	    fputc('\n', fout);
+    }
+    if (length % 4 != 0) {
+	for (i=0; i<4-(length%4); i++) {
+	    fputs("00", fout);
+	    if (++(*offset) % LINE_LEN == 0)
+		fputc('\n', fout);
+	}
+    }
+    *slen = ((length+3) & ~3)-start;
+
+    return 0;
+}
 
 
 

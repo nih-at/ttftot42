@@ -30,16 +30,6 @@
 
 #define SCALE(fu)	((int)(((fu)*1000)/f->units_per_em))
 
-#define TTAG_cvt   MAKE_TT_TAG( 'c', 'v', 't', ' ' )
-#define TTAG_fpgm  MAKE_TT_TAG( 'f', 'p', 'g', 'm' )
-#define TTAG_glyf  MAKE_TT_TAG( 'g', 'l', 'y', 'f' )
-#define TTAG_head  MAKE_TT_TAG( 'h', 'e', 'a', 'd' )
-#define TTAG_hhea  MAKE_TT_TAG( 'h', 'h', 'e', 'a' )
-#define TTAG_hmtx  MAKE_TT_TAG( 'h', 'm', 't', 'x' )
-#define TTAG_loca  MAKE_TT_TAG( 'l', 'o', 'c', 'a' )
-#define TTAG_maxp  MAKE_TT_TAG( 'm', 'a', 'x', 'p' )
-#define TTAG_prep  MAKE_TT_TAG( 'p', 'r', 'e', 'p' )
-
 
 
 struct bbox {
@@ -56,6 +46,7 @@ struct font {
     int vm_min;
     int vm_max;
     int units_per_em;
+    int long_loc;
 
     char *notice;
     char *full_name;

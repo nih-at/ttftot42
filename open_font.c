@@ -66,6 +66,7 @@ open_font(char *fname)
     f->face = face;
     f->nglyph = prop.num_Glyphs;
     f->nnames = prop.num_Names;
+    f->long_loc = hdr->Index_To_Loc_Format;
     f->units_per_em = hdr->Units_Per_EM;
     
     f->font_bbox.llx = SCALE(hdr->xMin);
