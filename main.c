@@ -32,8 +32,6 @@
 #include "t42.h"
 #include "substext.h"
 
-#include "config.h"
-
 char *prg;
 
 char version_string[] = 
@@ -58,7 +56,7 @@ char help_string[] = "\
   -N, --filename        print FontName and file name to standard output\n\
   -o, --output FILE     output to FILE\n\
   -c, --stdout          output to standard output\n\
-  -e, --encoding ENC    encoding to use (std, pdf, latin1)\n\
+  -e, --encoding ENC    encoding to use (std, pdf, latin1, 1252, font)\n\
   -C, --cid COLL        create CID keyed font (with collection COLL)\n\
   -F, --full            include full TrueType font file (not yet implemented)\n\
 \n\
@@ -222,7 +220,15 @@ main(int argc, char **argv)
 	    err = 1;
 	    continue;
 	}
-	
+
+	if ((enc->flags & ENC_FROMFONT) && (what & (WHAT_AFM|WHAT_FONT))) {
+	    if (get_encoding(f, enc) < 0) {
+		close_font(f);
+		err = 1;
+		continue;
+	    }
+	}
+
 	if (what & WHAT_AFM) {
 	    if (cat)
 		fout = stdout;
@@ -288,6 +294,7 @@ main(int argc, char **argv)
 		   outfile ? outfile : basename(fontfile));
 	}
 
+	clear_encoding(enc);
 	close_font(f);
     }
 

@@ -1,5 +1,17 @@
 2001-11-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* main.c (main): handle ENC_FROMFONT.
+	* util.c (get_encoding, clear_encoding): new functions.
+
+	* open_font.c (read_dir), t42.h, util.c (write_sfnts): don't
+	hardcode number of tables in directory.
+
+	* get_name.c (get_name): also accept Microsoft Symbol encoding.
+
+	* t42.h (struct encoding): change member builtin to flags.  adapt
+	users.
+	* encodings.c: add 1252 and font specific encodings.
+
 	* acidtocid.c (main): initialize exit value.
 	* cidtoacid.c (main): initialize exit value.
 

@@ -66,7 +66,8 @@ get_name(TT_Face f, int nnames, int name)
 		  && eid == TT_MAC_ID_ROMAN
 		  && lid == TT_MAC_LANGID_ENGLISH)
 		 || (pid == TT_PLATFORM_MICROSOFT
-		     && eid == TT_MS_ID_UNICODE_CS))) {
+		     && (eid == TT_MS_ID_UNICODE_CS || 
+			 eid == TT_MS_ID_SYMBOL_CS)))) {
 		TT_Get_Name_String(f, i, &p, &len);
 		if (pid == TT_PLATFORM_MACINTOSH) {
 		    if ((s=(char *)xmalloc(len+1)) == NULL)
@@ -76,6 +77,7 @@ get_name(TT_Face f, int nnames, int name)
 		    return s;
 		}
 		else {
+		    /* XXX: does TT_MS_ID_SYMBOL_CS have 2 byte chars? */
 		    if ((s=(char *)xmalloc((len/2)+1)) == NULL)
 			return NULL;
 		    for (t=s; len; p+=2,len-=2) {

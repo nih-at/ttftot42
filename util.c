@@ -26,6 +26,15 @@
 #include <stdlib.h>
 
 #include "config.h"
+
+#ifdef HAVE_FREETYPE_FREETYPE_H
+#include <freetype/ftxpost.h>
+#include <freetype/ftxerr18.h>
+#else
+#include <ftxpost.h>
+#include <ftxerr18.h>
+#endif
+
 #include "t42.h"
 
 static void write_strdef(FILE *fout, char *n, char *s);
@@ -116,13 +125,13 @@ write_sfnts(font *f, FILE *fout)
 
     int i, slen, soff;
     unsigned long offset, checksum;
-    struct table wdir[9];  /* dir ready for writing */
+    struct table wdir[NTABLES];  /* dir ready for writing */
     unsigned char *loca, *b;
 
     fputs(fixpart, fout);
 
     offset = 0;
-    for (i=0; i<9; i++) {
+    for (i=0; i<NTABLES; i++) {
 	wdir[i] = f->dir[i];
 	wdir[i].offset = offset+HEADER_LEN;
 	offset += (wdir[i].length+3) & ~3;
@@ -131,7 +140,7 @@ write_sfnts(font *f, FILE *fout)
     /* compute font checksum for head table */
 
     checksum = FIXED_SUM;
-    for (i=0; i<9; i++) {
+    for (i=0; i<NTABLES; i++) {
 	write_tabledir_entry(fout, wdir+i);
 	checksum += wdir[i].checksum*2 + wdir[i].offset + wdir[i].length;
     }
@@ -142,7 +151,7 @@ write_sfnts(font *f, FILE *fout)
     soff = 0;
     slen = HEADER_LEN;
     loca = NULL;
-    for (i=0; i<9; i++) {
+    for (i=0; i<NTABLES; i++) {
 	if (i != TABLE_LOCA || loca == NULL)
 	    b = read_table(f, f->dir[i].offset, wdir[i].length);
 	else
@@ -288,4 +297,76 @@ read_table(font *f, unsigned long offset, unsigned long length)
     TT_Get_Font_Data(f->face, 0, offset, b, &len);
     
     return b;
+}
+
+
+
+int
+get_encoding(font *f, struct encoding *enc)
+{
+    int i, valid, err;
+    TT_CharMap cmap;
+    unsigned short pl, en, idx;
+    char **vector;
+
+    /* XXX: include font file name in error messages */
+
+    valid = 0;
+    for (i=0; i<f->ncmaps; i++) {
+	TT_Get_CharMap_ID(f->face, i, &pl, &en);
+	/* XXX: don't hardcode pid/eid */
+	if ((pl == TT_PLATFORM_MACINTOSH && en == TT_MAC_ID_ROMAN)) {
+	    if ((err=TT_Get_CharMap(f->face, i, &cmap)) != TT_Err_Ok) {
+		fprintf(stderr, "%s: can't get cmap: %s\n",
+			prg, TT_ErrToString18(err));
+		return -1;
+	    }
+	    valid = 1;
+	    break;
+	}
+    }
+
+    if (!valid) {
+	fprintf(stderr, "%s: no compatible cmap found\n", prg);
+	return -1;
+    }
+
+    vector = xmalloc(sizeof(char *)*256);
+
+    for (i=0; i<256; i++) {
+	if ((idx=TT_Char_Index(cmap, i)) != 0) {
+	    if (TT_Get_PS_Name(f->face, idx, vector+i) != TT_Err_Ok) {
+		/* XXX: handle error? */
+		vector[i] = NULL;
+	    }
+	}
+	else
+	    vector[i] = NULL;
+    }
+
+    enc->vector = vector;
+    return 0;
+}
+
+
+
+void
+clear_encoding(struct encoding *enc)
+{
+    if ((enc->flags & ENC_FROMFONT )== 0)
+	return;
+
+    if (enc->vector) {
+#if 0
+	/* XXX: are strings returned by TT_Get_PS_Name malloc()ed? */
+	for (i=0; i<256; i++)
+	    free(enc->vector[i]);
+#endif
+	free(enc->vector);
+	enc->vector = NULL;
+    }
+    if (enc->reverse) {
+	free(enc->reverse);
+	enc->reverse = NULL;
+    }
 }

@@ -81,7 +81,7 @@ write_t42(font *f, FILE *fout, struct encoding *encoding)
 
     /* encoding */
 
-    if (encoding->builtinp)
+    if (encoding->flags & ENC_BUILTIN)
 	fprintf(fout, "/Encoding %s def\n", encoding->full_name);
     else {
 	/* XXX: put only glyph actually contained in font in encoding array */

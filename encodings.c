@@ -1,5 +1,5 @@
 /*
-  enc_standard -- Adobe Standard, ISO Latin 1, and PDF Doc Encodings
+  encodings.c -- enconding vectors
   Copyright (C) 1998, 1999 Dieter Baron
 
   This file is part of ttftot42, to use TrueType fonts in PostScript.
@@ -161,6 +161,77 @@ char *enc_latin1[256] = {
 
 
 
+char *enc_1252[256] = {
+    /* 0x00 */
+    NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, 
+    NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF,
+    /* 0x10 */
+    NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, 
+    NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, 
+    /* 0x20 */
+    "space", "exclam", "quotedbl", "numbersign", 
+    "dollar", "percent", "ampersand", "quotesingle", 
+    "parenleft", "parenright", "asterisk", "plus", 
+    "comma", "hyphen", "period", "slash", 
+    /* 0x30 */
+    "zero", "one", "two", "three", "four", "five", "six", "seven", 
+    "eight", "nine", "colon", "semicolon",
+    "less", "equal", "greater", "question", 
+    /* 0x40 */
+    "at", "A", "B", "C", "D", "E", "F", "G",
+    "H", "I", "J", "K", "L", "M", "N", "O", 
+    /* 0x50 */
+    "P", "Q", "R", "S", "T", "U", "V", "W",
+    "X", "Y", "Z", "bracketleft",
+    "backslash", "bracketright", "asciicircum", "underscore", 
+    /* 0x60 */
+    "grave", "a", "b", "c", "d", "e", "f", "g",
+    "h", "i", "j", "k", "l", "m", "n", "o", 
+    /* 0x70 */
+    "p", "q", "r", "s", "t", "u", "v", "w",
+    "x", "y", "z", "braceleft", "bar", "braceright", "asciitilde", NDEF, 
+    /* 0x80 */
+    NDEF, NDEF, "quotesinglbase", "florin", 
+    "quotedblbase", "ellipsis", "dagger", "daggerdbl", 
+    "circumflex", "perthousand", "Scaron", "guilsinglleft",
+    "OE", NDEF, NDEF, NDEF, 
+    /* 0x90 */
+    NDEF, "quoteleft", "quoteright", "quotedblleft", 
+    "quotedblright", "bullet", "endash", "emdash", 
+    "tilde", "trademark", "scaron", "guilsinglright", 
+    "oe", NDEF, NDEF, "Ydieresis", 
+    /* 0xa0 */
+    NDEF, "exclamdown", "cent", "sterling", 
+    "currency", "yen", "brokenbar", "section", 
+    "dieresis", "copyright", "ordfeminine", "guillemotleft", 
+    "logicalnot", "hyphen", "registered", "macron", 
+    /* 0xb0 */
+    "degree", "plusminus", "twosuperior", "threesuperior", 
+    "acute", "mu", "paragraph", "periodcentered", 
+    "cedilla", "onesuperior", "ordmasculine", "guillemotright", 
+    "onequarter", "onehalf", "threequarters", "questiondown", 
+    /* 0xc0 */
+    "Agrave", "Aacute", "Acircumflex", "Atilde", 
+    "Adieresis", "Aring", "AE", "Ccedilla", 
+    "Egrave", "Eacute", "Ecircumflex", "Edieresis", 
+    "Igrave", "Iacute", "Icircumflex", "Idieresis",
+    /* 0xd0 */
+    "Eth", "Ntilde", "Ograve", "Oacute", 
+    "Ocircumflex", "Otilde", "Odieresis", "multiply", 
+    "Oslash", "Ugrave", "Uacute", "Ucircumflex", 
+    "Udieresis", "Yacute", "Thorn", "germandbls", 
+    /* 0xe0 */
+    "agrave", "aacute", "acircumflex", "atilde", 
+    "adieresis", "aring", "ae", "ccedilla", 
+    "egrave", "eacute", "ecircumflex", "edieresis", 
+    "igrave", "iacute", "icircumflex", "idieresis", 
+    /* 0xf0*/
+    "eth", "ntilde", "ograve", "oacute", 
+    "ocircumflex", "otilde", "odieresis", "divide", 
+    "oslash", "ugrave", "uacute", "ucircumflex", 
+    "udieresis", "yacute", "thorn", "ydieresis"
+};
+
 char *enc_pdf[256] = {
     /* 0x00 */
     NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF, NDEF,
@@ -237,9 +308,12 @@ char *enc_pdf[256] = {
 
 
 struct encoding encoding[] = {
-    { "std", "StandardEncoding", 1, enc_standard, NULL },
-    { "latin1", "ISOLatin1Encoding", 0, enc_latin1, NULL },
-    { "pdf", "PDFDocEncoding", 0, enc_pdf, NULL },
+    /* first entry is default */
+    { "std",    "StandardEncoding",      ENC_BUILTIN,  enc_standard, NULL, 0 },
+    { "1252",   "Microsoft1252Encoding", 0,            enc_1252,     NULL, 0 },
+    { "font",   "FontSpecificEncoding",  ENC_FROMFONT, NULL,         NULL, 0 },
+    { "latin1", "ISOLatin1Encoding",     0,            enc_latin1,   NULL, 0 },
+    { "pdf",    "PDFDocEncoding",        0,            enc_pdf,      NULL, 0 }
 };
 
 int nencoding = sizeof(encoding)/sizeof(encoding[0]);

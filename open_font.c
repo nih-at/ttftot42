@@ -260,7 +260,7 @@ read_dir(font *f, char *fname)
     }
     free(b);
 
-    for (i=j=0; i<ntables && j<9; i++) {
+    for (i=j=0; i<ntables && j<NTABLES; i++) {
 	if (strcmp(dir[i].tag, table_name[j]) == 0) {
 	    f->dir[j] = dir[i];
 

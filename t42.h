@@ -39,8 +39,12 @@
 
 #ifdef HAVE_TT_INIT_GSUB_EXTENSION
 #define HAVE_GSUB
+#ifdef HAVE_FREETYPE_FREETYPE_H
+#include <freetype/ftxopen.h>
+#else
 #include <ftxopen.h>
 #endif
+#endif /* gsub */
 
 #ifndef HAVE_STRDUP
 char *strdup(char *name);
@@ -60,10 +64,16 @@ char *strdup(char *name);
 
 #define MAX_STRLEN  65534    /* max. PostScript string length - 1 */
 #define LINE_LEN    36       /* length of one line (in bytes) */
-#define HEADER_LEN  12+9*16  /* length of header and table directory */
+#define NTABLES     9        /* number of tables in table dir */
+#define HEADER_LEN  (12+NTABLES*16)
+                             /* length of header and table directory */
 #define TABLE_GLYF  2        /* index of glyf table */
 #define TABLE_HEAD  3        /* index of head table */
 #define TABLE_LOCA  6        /* index of loca table */
+
+/* encoding flags */
+#define ENC_BUILTIN	0x1	/* built into PostScript interpreter */
+#define ENC_FROMFONT	0x2	/* encoding vector is taken from font */
 
 
 
@@ -86,7 +96,7 @@ struct font {
     TTO_GSUBHeader *gsub;
 #endif
 
-    struct table dir[9];
+    struct table dir[NTABLES];
 
     int nglyph;
     int nnames;
@@ -129,7 +139,7 @@ struct rev_enc {
 
 struct encoding {
     char *name, *full_name;
-    int builtinp;
+    int flags;
     char **vector;
     struct rev_enc *reverse;
     int nreverse;
@@ -144,24 +154,21 @@ extern int nencoding;
 
 
 
-void *xmalloc(size_t size);
-void *xrealloc(void *data, size_t size);
-
-int init(void);
-int done(void);
-font *open_font(char *fname, int what, int type);
-void close_font(font *f);
-char *get_name(TT_Face f, int nnames, int name);
-int write_t42(font *f, FILE *fout, struct encoding *encoding);
-int write_cid2(font *f, FILE *fout, struct cid *cid);
-int write_afm(font *f, FILE *fout, struct encoding *encoding);
-
-int write_cidmap(font *f, struct cid *cid, FILE *fout);
-
 int cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp);
-
-/* util.h */
+void clear_encoding(struct encoding *enc);
+void close_font(font *f);
+int done(void);
+int get_encoding(font *f, struct encoding *enc);
+char *get_name(TT_Face f, int nnames, int name);
+int init(void);
+font *open_font(char *fname, int what, int type);
+int write_afm(font *f, FILE *fout, struct encoding *encoding);
+int write_cid2(font *f, FILE *fout, struct cid *cid);
+int write_cidmap(font *f, struct cid *cid, FILE *fout);
 int write_font_info(FILE *fout, font *f);
 int write_sfnts(font *f, FILE *fout);
+int write_t42(font *f, FILE *fout, struct encoding *encoding);
+void *xmalloc(size_t size);
+void *xrealloc(void *data, size_t size);
 
 #endif /* t42.h */
