@@ -4,6 +4,7 @@ general
 * handle other encodings
 * documentation
 * lsm entry
+* --with-freetype=prefix
 - TrueType collections
 - CID keyed t42 fonts
 

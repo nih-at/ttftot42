@@ -28,6 +28,17 @@
 #include <stdio.h>
 #include <freetype.h>
 
+#include "config.h"
+
+#ifndef HAVE_BASENAME
+char *basename(char *name);
+#endif
+
+#ifndef HAVE_STRDUP
+char *strdup(char *name);
+#endif
+
+
 #define SCALE(fu)	((int)(((fu)*1000)/f->units_per_em))
 
 #define WHAT_FONT  0x1   /* output Type 42 font */

@@ -1,3 +1,10 @@
+1998-12-14  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c, t42.h: moved conditional declaration of basename to
+	t42.h, added similar declaration for strdup.
+
+	* write_afm.c (make_glyph): return 0, not NULL.
+
 1998-12-13  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* write_t42.c (write_sfnts): adjust font checksum in head table.

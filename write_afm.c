@@ -204,7 +204,7 @@ make_glyph(font *f, struct code *code, struct glyph **g)
     struct code *c;
 
     if ((glyph=(struct glyph *)malloc(sizeof(struct glyph)*f->nglyph)) == NULL)
-	return NULL;
+	return 0;
     
     for (j=i=0; i<f->nglyph; i++) {
 	TT_Get_PS_Name(f->face, i, &glyph[j].name);

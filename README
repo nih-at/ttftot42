@@ -1,7 +1,7 @@
 						-*- text -*-
 
   This is ttftot42, a program to faciliate using TrueType fonts on
-PostScript interperters with TrueType rasterizer.
+PostScript interpreters with TrueType rasterizer.
 
   You need the FreeType library to compile and use it.
 
