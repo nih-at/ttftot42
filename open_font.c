@@ -109,7 +109,10 @@ open_font(char *fname, int what, int type)
 
     f->vm_min = ps->minMemType42;
     f->vm_max = ps->maxMemType42;
-    f->italic_angle = fixed2str(ps->italicAngle, 3);
+    if ((ps->italicAngle>>16) <= 180 && (ps->italicAngle>>16) >= -180)
+	f->italic_angle = fixed2str(ps->italicAngle, 3);
+    else
+	f->italic_angle = strdup("0");
     /* XXX: scale values from post table? */
     f->underline_position = ps->underlinePosition-ps->underlineThickness/2;
     f->underline_thickness = ps->underlineThickness;
