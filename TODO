@@ -3,7 +3,6 @@ general
 ! done (destroy fte &c)
 * use xmalloc
 * handle other encodings
-! references
 - TrueType collections
 - CID keyed t42 fonts
 
