@@ -26,13 +26,15 @@
 
 
 #include <stdio.h>
+
+#include "config.h"
+
 #ifdef HAVE_FREETYPE_FREETYPE_H
 #include <freetype/freetype.h>
 #else
 #include <freetype.h>
 #endif
 
-#include "config.h"
 #include "cid.h"
 
 #ifdef HAVE_TT_INIT_GSUB_EXTENSION
