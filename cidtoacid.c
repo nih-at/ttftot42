@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <errno.h>
 
 #include "cid.h"
 #include "substext.h"
@@ -102,6 +103,9 @@ main(int argc, char **argv)
 
     for (; optind < argc; optind++) {
 	if ((cid=cid_read(argv[optind])) == NULL) {
+	    /* XXX: should error output be done in cid_read? */
+	    fprintf(stderr, "%s: can't read CID file `%s': %s\n",
+		    prg, argv[optind], strerror(errno));
 	    ret = 1;
 	    continue;
 	}

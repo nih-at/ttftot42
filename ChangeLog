@@ -1,5 +1,7 @@
 1999-04-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* cidtoacid.c (main): report error return from cid_read.
+
 	* cid_aread.c (cid_aread): allow for missing cid values in
 	Encoding section (treat as unencoded).
 
