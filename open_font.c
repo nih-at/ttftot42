@@ -2,7 +2,7 @@
   open_font -- open font file and extract needed information
   Copyright (C) 1998 Dieter Baron
 
-  This file is part of otftot42, to use TrueType fonts in PostScript.
+  This file is part of ttftot42, to use TrueType fonts in PostScript.
   The author can be contacted at <dillo@giga.or.at>
 
   This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 						-*- text -*-
 
-  This is otftot42, a program to faciliate using TrueType fonts on
+  This is ttftot42, a program to faciliate using TrueType fonts on
 PostScript interperters with TrueType rasterizer.
 
   You need the FreeType library to compile and use it.
@@ -24,8 +24,8 @@ TrueType fonts (East Asian or Unicode fonts).
 
   If you make a binary distribution, please include a pointer to the
 distribution site:
-	ftp.giga.or.at /pub/nih/otftot42
-	http://ftp.giga.or.at/pub/nih/otftot42
+	ftp.giga.or.at /pub/nih/ttftot42
+	http://ftp.giga.or.at/pub/nih/ttftot42
 The latest version can always be found there.
 
 Mail suggestions and bug reports to <dillo@giga.or.at>.
