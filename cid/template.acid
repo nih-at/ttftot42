@@ -1,0 +1,14 @@
+StartCID 1.0
+Registry 
+Ordering 
+Supplements 
+StartCharmaps 1
+StartCharmap Microsoft Unicode
+Vertical 
+Feature 
+EndCharmap
+EndCharmaps
+StartEncoding 
+CID 
+EndEncoding
+EndCID
