@@ -109,6 +109,8 @@ struct font {
     int underline_thickness;
     int ascender;
     int descender;
+    int capheight;
+    int xheight;
 
     struct bbox font_bbox;
 

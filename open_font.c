@@ -113,6 +113,8 @@ open_font(char *fname, int what, int type)
     f->weight = strdup(weight_name[weight]);
     f->ascender = SCALE(os2->sTypoAscender);
     f->descender = SCALE(os2->sTypoDescender);
+    f->capheight = SCALE(os2->sCapHeight);
+    f->xheight = SCALE(os2->sxHeight);
 
     f->tt_version = strdup("001.000"); /* FreeType only supports version 1.0 */
     f->version = (char *)malloc(8);

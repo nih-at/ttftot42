@@ -1,3 +1,9 @@
+1999-03-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* t42.h: new members xheight and capheight.
+	* open_font.c (open_font): set xheight and capheight.
+	* write_afm.c (write_afm): write XHeight and CapHeight.
+
 1999-02-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* write_afm.c (make_revenc): alloc enough space for reverse.
