@@ -57,7 +57,7 @@ char help_string[] = "\
   -e, --encoding enc    encoding to use (std, pdf, mac, latin1, font)*\n\
   -F, --full            include full TrueType font*\n\
 \n\
-*: not yet implemented\n
+*: not yet implemented\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 
