@@ -72,8 +72,8 @@ cid_aread(char *fname)
     struct cid_feature *feature;
     enum state state;
     char b[8192], *cmd, *p, *q;
-    int i;
-    int ccmap, ncmap, garbage, enc, ma, mi;
+    int i, j;
+    int ccmap, ncmap, garbage, enc, ma, mi, next_cid;
 
     if ((f=fopen(fname, "r")) == NULL) {
 	/* error: can't open file */
@@ -181,6 +181,7 @@ cid_aread(char *fname)
 
 		for (i=0; i<cid->ncmap; i++)
 		    cid_encode_init(cid->cmap[i].code);
+		next_cid = 0;
 		
 		state = ST_ENC;
 	    }
@@ -280,7 +281,15 @@ cid_aread(char *fname)
 	case ST_ENC:
 	    if (strcmp(cmd, "CID") == 0) {
 		GET_TOKEN();
-		/* check for consecutive cid values */
+		/* allow for missing cid values (treat as `*') */
+		i = atoi(p);
+		while (next_cid < i) {
+		    for (j=0; j<cid->ncmap; j++)
+			cid_encode(cid->cmap[i].code, "*");
+		    next_cid++;
+		}
+		next_cid = i+1;
+		
 		for (i=0; i<cid->ncmap; i++) {
 		    GET_TOKEN();
 		    cid_encode(cid->cmap[i].code, p);

@@ -1,3 +1,8 @@
+1999-04-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* cid_aread.c (cid_aread): allow for missing cid values in
+	Encoding section (treat as unencoded).
+
 1999-04-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* configure.in: check for TTO_GSUB_Apply to determine GSUB support

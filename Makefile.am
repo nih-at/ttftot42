@@ -17,4 +17,4 @@ cidtoacid_SOURCES=cidtoacid.c cid_read.c cid_awrite.c cid_util.c cid_decode.c \
 
 noinst_HEADERS=t42.h cid.h pideid.h substext.h getopt.h
 
-EXTRA_DIST=REFERENCES ttftot42.lsm
+EXTRA_DIST=REFERENCES ttftot42.lsm cid-format mkfontmap
