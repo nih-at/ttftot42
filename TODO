@@ -2,6 +2,7 @@ general
 
 * use xmalloc
 * handle other encodings
+* documentation
 - TrueType collections
 - CID keyed t42 fonts
 
