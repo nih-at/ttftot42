@@ -81,6 +81,11 @@ struct option options[] = {
     { NULL,        0, 0, 0   }
 };
 
+/* dummy cid struct */
+static struct cid cid = {
+    "Adobe", "Japan1", 2
+};
+
 
 
 char *substext(char *fname, char *ext, char *newext);
@@ -264,7 +269,7 @@ main(int argc, char **argv)
 		if (type == TYPE_T42)
 		    write_t42(f, fout, enc);
 		else
-		    write_cid2(f, fout, NULL);
+		    write_cid2(f, fout, &cid);
 		fclose(fout);
 	    }
 	}

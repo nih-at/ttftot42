@@ -4,7 +4,6 @@ general
 * handle encodings MacRoman and FontSpecific
 * documentation
 - TrueType collections
-- CID keyed t42 fonts
 - subsetting
 ? convert to Type 1
 
@@ -28,10 +27,11 @@ t42
 * detect missing tables
 * read glyf table in parts, use static buffer for tables
 * put only glyphs into encoding array that are present in font
+! write_sfnts: extra newline when last line is full
 - embed full font (--full)
 
 cid2
 
 * vert and jajn substitiutions
 * omit unencoded glyphs at end of CIDMap
-* cid.c: create array of glyph indices
+* cid.c: create array of glyph indices included in struct cid.

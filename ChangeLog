@@ -1,3 +1,9 @@
+1999-01-09  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* write_cid2.c (write_cid2): added DSC comments.
+
+	* cid.c (write_cidmap): new argument cid; changed callers.
+
 1999-01-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* write_t42.c (write_t42): moved parts shared with write_cid2 to

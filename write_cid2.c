@@ -48,6 +48,10 @@ write_cid2(font *f, FILE *fout, struct cid *cid)
     fputs("%%Creator: " PACKAGE " " VERSION "\n", fout);
     fprintf(fout, "%%%%CreationDate: %s", ctime(&fuck_ctime));
 
+    fprintf(fout, "%%%%BeginResource: CIDFont (%s)\n", f->font_name);
+    fprintf(fout, "%%%%Title: (%s %s %s %d)\n",
+	    f->font_name, cid->registry, cid->ordering, cid->supplement);
+
     fputs("15 dict begin\n", fout);
     fprintf(fout, "/CIDFontName /%s def\n", f->font_name);
 
@@ -65,11 +69,10 @@ write_cid2(font *f, FILE *fout, struct cid *cid)
     
     /* CIDSystemInfo */
 
-    /* XXX: handle other collections */
     fputs("/CIDSystemInfo 3 dict dup begin\n", fout);
-    fprintf(fout, "/Registry (%s) def\n", "Adobe");
-    fprintf(fout, "/Ordering (%s) def\n", "Japan1");
-    fprintf(fout, "/Supplement %d def\n", 2);
+    fprintf(fout, "/Registry (%s) def\n", cid->registry);
+    fprintf(fout, "/Ordering (%s) def\n", cid->ordering);
+    fprintf(fout, "/Supplement %d def\n", cid->supplement);
     fputs("end def\n", fout);
 
 
@@ -80,7 +83,7 @@ write_cid2(font *f, FILE *fout, struct cid *cid)
     
     /* glyph id to cid mapping */
 
-    write_cidmap(f, fout);
+    write_cidmap(f, cid, fout);
     
 
     write_sfnts(f, fout);
@@ -99,7 +102,9 @@ write_cid2(font *f, FILE *fout, struct cid *cid)
 
     /* trailer */
 
-    fputs("CIDFontName currentdict end /CIDFont defineresource pop\n", fout);
+    fputs("CIDFontName currentdict end /CIDFont defineresource pop\n\
+%%EndResource\n\
+%%EOF\n", fout);
 
     return 0;
 }
