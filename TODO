@@ -3,7 +3,6 @@ general
 * use xmalloc
 * handle other encodings
 * documentation
-! option to print FontName(s) to stdout
 - TrueType collections
 - CID keyed t42 fonts
 - subsetting
@@ -13,11 +12,12 @@ both
 
 * error handling (e. g. write error)
 * validate lexical correctness of glyph names
-* version vs. font_revision
+* version vs. font_revision (parse version string)
 - XUID
 
 afm
 
+! sort encoding vector only once
 * CapHeight, XHeight (OS/2)
 * StdHW, StdVW
 

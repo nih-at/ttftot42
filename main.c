@@ -58,7 +58,7 @@ char help_string[] = "\
   -o, --output FILE     output to FILE\n\
   -c, --stdout          output to standard output\n\
   -e, --encoding ENC    encoding to use (std, pdf, mac, latin1, font)*\n\
-  -F, --full            include full TrueType font*\n\
+  -F, --full            include full TrueType font file*\n\
 \n\
 *: not yet implemented\n\
 \n\
