@@ -142,6 +142,11 @@ main(int argc, char **argv)
 	case 'C':
 	    type |= TYPE_CID;
 	    cid = find_cid(optarg);
+	    if (cid == NULL) {
+		fprintf(stderr, "%s: cid map `%s' not found\n",
+			prg, optarg);
+		exit(1);
+	    }
 	    break;
 	case 'o':
 	    outfile = optarg;
@@ -302,7 +307,7 @@ struct cid *
 find_cid(char *name)
 {
     struct cid *cid;
-    char b[8192], *registry, *ordering, *p;
+    char b[8192], b2[8192], *registry, *ordering, *p;
     FILE *f;
     int i, supplement;
 
@@ -310,7 +315,8 @@ find_cid(char *name)
 	return cid_read(name);
 
     if (strchr(name, '-')) {
-	registry = strtok(name, "-");
+	strcpy(b2, name);
+	registry = strtok(b2, "-");
 	ordering = strtok(NULL, "-");
 	p = strtok(NULL, "-");
 	if (p)
@@ -330,11 +336,10 @@ find_cid(char *name)
 		if (p && strcasecmp(ordering, p) != 0)
 		    continue;
 		p = strtok(NULL, " \t\n");
+		p = strtok(NULL, " \t\n");
 		if (p) {
-		    p = strdup(p);
-		    sprintf(b, "%s/%s.cid", cid_path[i], p);
-		    free(p);
-		    cid = cid_read(b);
+		    sprintf(b2, "%s/%s.cid", cid_path[i], p);
+		    cid = cid_read(b2);
 		    if (cid != NULL) {
 			fclose(f);
 			if (supplement != -1) {
