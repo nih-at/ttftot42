@@ -293,13 +293,69 @@ main(int argc, char **argv)
 
 
 
+static char *cid_path[] = {
+    DATADIR,
+    NULL
+};
+
 struct cid *
 find_cid(char *name)
 {
-    /* XXX: dummy */
+    struct cid *cid;
+    char b[8192], *registry, *ordering, *p;
+    FILE *f;
+    int i, supplement;
 
-    char b[8192];
+    if (strchr(name, '/'))
+	return cid_read(name);
 
-    sprintf(b, "cid/%s.cid", name);
-    return cid_read(b);
+    if (strchr(name, '-')) {
+	registry = strtok(name, "-");
+	ordering = strtok(NULL, "-");
+	p = strtok(NULL, "-");
+	if (p)
+	    supplement = atoi(p);
+	else
+	    supplement = -1;
+	
+	for (i=0; cid_path[i]; i++) {
+	    sprintf(b, "%s/index", cid_path[i]);
+	    if ((f=fopen(b, "r")) == NULL)
+		continue;
+	    while (fgets(b, 8192, f)) {
+		p = strtok(b, " \t\n");
+		if (p && strcasecmp(registry, p) != 0)
+		    continue;
+		p = strtok(NULL, " \t\n");
+		if (p && strcasecmp(ordering, p) != 0)
+		    continue;
+		p = strtok(NULL, " \t\n");
+		if (p) {
+		    p = strdup(p);
+		    sprintf(b, "%s/%s.cid", cid_path[i], p);
+		    free(p);
+		    cid = cid_read(b);
+		    if (cid != NULL) {
+			fclose(f);
+			if (supplement != -1) {
+			    if (cid->nsupl > supplement)
+				cid->supplement = supplement;
+			}
+			return cid;
+		    }
+		}
+	    }
+	}
+    }
+
+    for (i=0; cid_path[i]; i++) {
+	sprintf(b, "%s/%s", cid_path[i], name);
+	if ((cid=cid_read(b)))
+	    return cid;
+	sprintf(b, "%s/%s.cid", cid_path[i], name);
+	if ((cid=cid_read(b)))
+	    return cid;
+    }
+
+    return NULL;
 }

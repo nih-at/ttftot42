@@ -1,4 +1,5 @@
 LDADD=@LIBOBJS@
+DEFS = @DEFS@ -DDATADIR=\"$(pkgdatadir)\" -I. -I$(srcdir) -I.
 
 SUBDIRS=. cid
 

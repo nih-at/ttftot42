@@ -1,5 +1,7 @@
 1999-05-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* main.c (find_cid): implemented searching (was dummy function).
+
 	* util.c (write_sfnts, write_table_dir): fixed bug on systems with
 	sizeof(long) != 4.
 
