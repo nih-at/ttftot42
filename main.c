@@ -32,15 +32,6 @@
 
 #include "config.h"
 
-#define MAX_STRLEN  65534  /* max. PostScript string length - 1 */
-
-#if 0
-static char *table_name[] = {
-    "cvt", "fpgm", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "prep",
-    NULL
-};
-#endif
-
 char *prg;
 
 char version_string[] = 

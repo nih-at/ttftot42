@@ -83,6 +83,8 @@ extern char *prg;
 extern TT_Engine fte;
 extern char *enc_standard[256];
 
+void *xmalloc(size_t size);
+
 int init(void);
 font *open_font(char *fname);
 void close_font(font *f);
