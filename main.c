@@ -44,7 +44,7 @@ PACKAGE " under the terms of the GNU General Public License.\n\
 For more information about these matters, see the files named COPYING.\n";
 
 char usage_string[] = "\
-Usage: %s [-hVafcF] [-o file] [-e encoding] ttf-file ...\n";
+Usage: %s [-hVafnNcF] [-o file] [-e encoding] ttf-file ...\n";
 
 char help_string[] = "\
 \n\
@@ -53,16 +53,18 @@ char help_string[] = "\
 \n\
   -a, --afm             write afm file\n\
   -f, --font            write t42 file\n\
-  -o, --output file     output to file\n\
+  -n, --name            print FontName to standard output\n\
+  -N, --fontmap         print Ghostscript Fontmap lines to standard output\n\
+  -o, --output FILE     output to FILE\n\
   -c, --stdout          output to standard output\n\
-  -e, --encoding enc    encoding to use (std, pdf, mac, latin1, font)*\n\
+  -e, --encoding ENC    encoding to use (std, pdf, mac, latin1, font)*\n\
   -F, --full            include full TrueType font*\n\
 \n\
 *: not yet implemented\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 
-#define OPTIONS	"hVafo:ce:F"
+#define OPTIONS	"hVafnNo:ce:F"
 
 struct option options[] = {
     { "help",      0, 0, 'h' },
@@ -70,6 +72,8 @@ struct option options[] = {
     { "name",      0, 0, 'n' },
     { "afm",       0, 0, 'a' },
     { "font",      0, 0, 'f' },
+    { "name",      0, 0, 'n' },
+    { "fontmap",   0, 0, 'N' },
     { "output",    1, 0, 'o' },
     { "stdout",    0, 0, 'c' },
     { "encoding",  1, 0, 'e' },
@@ -112,6 +116,12 @@ main(int argc, char **argv)
 	    break;
 	case 'a':
 	    what |= WHAT_AFM;
+	    break;
+	case 'n':
+	    what |= WHAT_NAME;
+	    break;
+	case 'N':
+	    what |= WHAT_FMAP;
 	    break;
 	case 'F':
 	    full = 1;
@@ -169,7 +179,18 @@ main(int argc, char **argv)
 	    exit(1);
 	}
     }
-
+    if ((what & (WHAT_NAME|WHAT_FMAP)) == (WHAT_NAME|WHAT_FMAP)) {
+	fprintf(stderr, "%s: can't write both FontName and Fontmap line to "
+		"standard output\n", prg);
+	exit(1);
+    }
+    if (cat && what & (WHAT_NAME|WHAT_FMAP)) {
+	fprintf(stderr, "%s: can't write both font and %s to "
+		"standard output\n",
+		prg,
+		(what & WHAT_NAME) ? "FontName" : "Fontmap line");
+	exit(1);
+    }
     if (what == 0)
 	what = WHAT_FONT|WHAT_AFM;
 
@@ -201,8 +222,10 @@ main(int argc, char **argv)
 		}
 		outfile = NULL;
 	    }
-	    if (fout)
+	    if (fout) {
 		write_afm(f, fout);
+		fclose(fout);
+	    }
 	}
 	if (what & WHAT_FONT) {
 	    if (cat)
@@ -223,8 +246,18 @@ main(int argc, char **argv)
 		}
 		outfile = NULL;
 	    }
-	    if (fout)
+	    if (fout) {
 		write_t42(f, fout);
+		fclose(fout);
+	    }
+	}
+	if (what & WHAT_NAME)
+	    printf("%s\n", f->font_name);
+	if (what & WHAT_FMAP) {
+	    if (!outfile)
+		outfile = substext(basename(fontfile), ".ttf", ".t42");
+	    printf("/%s\t(%s) ;\n", f->font_name, outfile);
+	    outfile = NULL;
 	}
 
 	close_font(f);

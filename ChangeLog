@@ -1,3 +1,11 @@
+1999-01-02  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (main): close output files.
+
+	* get_name.c (get_name): return string when found (pid == Macintosh).
+
+	* t42.h, main.c (main): new options --name and --fontmap.
+
 1998-12-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* t42.h, configure.in: check for <libgen.h> and include if found

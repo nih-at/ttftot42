@@ -3,7 +3,7 @@ general
 * use xmalloc
 * handle other encodings
 * documentation
-* option to print FontName(s) to stdout
+! option to print FontName(s) to stdout
 - TrueType collections
 - CID keyed t42 fonts
 - subsetting

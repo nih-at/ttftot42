@@ -70,6 +70,7 @@ get_name(TT_Face f, int nnames, int name)
 			return NULL;
 		    strncpy(s, p, len);
 		    s[len] = '\0';
+		    return s;
 		}
 		else {
 		    if ((s=(char *)malloc((len/2)+1)) == NULL)

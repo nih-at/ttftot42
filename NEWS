@@ -1,5 +1,6 @@
 release 0.3:  
 
+* new options: --name and --fontmap (print FontName or Fontmap entry to stdout)
 * adjust font checksum in head table of included TrueType font.
 * omit duplicate entries for .notdef in CharStrings dictionary.
 
