@@ -57,10 +57,8 @@ char help_string[] = "\
   -N, --fontmap         print Ghostscript Fontmap lines to standard output\n\
   -o, --output FILE     output to FILE\n\
   -c, --stdout          output to standard output\n\
-  -e, --encoding ENC    encoding to use (std, pdf, mac, latin1, font)*\n\
-  -F, --full            include full TrueType font file*\n\
-\n\
-*: not yet implemented\n\
+  -e, --encoding ENC    encoding to use (std, pdf, latin1)\n\
+  -F, --full            include full TrueType font file (not yet implemented)\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 
