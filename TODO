@@ -21,7 +21,7 @@ afm
 t42
 
 * PaintType (how to recognize 2, StrokeWidth)
-* fix checksums
+* fix checksum
 * remove duplicate definitions of .notdef in CharStrings
 * detect missing tables
 - embed full font (--full)
