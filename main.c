@@ -79,7 +79,9 @@ struct option options[] = {
 
 
 char *substext(char *fname, char *ext, char *newext);
+#ifndef HAVE_BASENAME
 char *basename(char *name);
+#endif
 
 
 

@@ -1,0 +1,4 @@
+1998-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c: declare basename only if missing.
+
