@@ -34,4 +34,4 @@ cid2
 ! vert and jajn substitiutions
 ! omit unencoded glyphs at end of CIDMap
 ! cid.c: create array of glyph indices included in struct cid.
-! CID0: add ncids, substitutions.
+! CID0: add ncids, substitutions, support for multiple cmaps.

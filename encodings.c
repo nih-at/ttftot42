@@ -134,7 +134,7 @@ char *enc_latin1[256] = {
     "logicalnot", "hyphen", "registered", "macron",
     /* 0xb0 */
     "degree", "plusminus", "twosuperior", "threesuperior",
-    "acute", "mu", "paragraph", "perodcentered",
+    "acute", "mu", "paragraph", "periodcentered",
     "cedilla", "onesuperior", "ordmasculine", "guillemotright",
     "onequarter", "onehalf", "threequarters", "questiondown",
     /* 0xc0 */
