@@ -72,42 +72,3 @@ print_names(char *fname)
 
     return 0;
 }
-
-
-
-char *
-get_name(TT_Face f, int nnames, int name)
-{
-    int i;
-    TT_UShort pid, eid, lid, nid, len;
-    char *p, *s, *t;
-
-    for (i=0; i<nnames; i++) {
-	TT_Get_Name_ID(f, i, &pid, &eid, &lid, &nid);
-
-	if (nid == name) {
-	    if (((pid == 1 /* mac */ && eid == 0 /* roman */)
-		 || (pid == 3 /* ms */ && eid == 1 /* unicode */))) {
-		TT_Get_Name_String(f, i, &p, &len);
-		if (pid == 1) {
-		    if ((s=(char *)malloc(len+1)) == NULL)
-			return NULL;
-		    strncpy(s, p, len);
-		    s[len] = '\0';
-		}
-		else {
-		    if ((s=(char *)malloc((len/2)+1)) == NULL)
-			return NULL;
-		    for (t=s; len; p+=2,len-=2) {
-			if (*p == 0)
-			    *(t++) = p[1];
-		    }
-		    *t = '\0';
-		    return s;
-		}
-	    }
-	}
-    }
-
-    return NULL;
-}
