@@ -1,3 +1,8 @@
+1999-05-05  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c (write_sfnts, write_table_dir): fixed bug on systems with
+	sizeof(long) != 4.
+
 1999-04-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* cidtoacid.c (main): report error return from cid_read.
