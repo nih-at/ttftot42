@@ -8,4 +8,4 @@ ttftot42_SOURCES=main.c init.c open_font.c close_font.c get_name.c \
 
 noinst_HEADERS=t42.h getopt.h
 
-EXTRA_DIST=REFERENCES
+EXTRA_DIST=REFERENCES ttftot42.lsm
