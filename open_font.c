@@ -31,12 +31,13 @@
 
 #include "t42.h"
 
-char *fixed2str(TT_Fixed f, int prec);
+static char *fixed2str(TT_Fixed f, int prec);
+static int read_dir(font *f, char *fname);
 
 
 
 font *
-open_font(char *fname)
+open_font(char *fname, int what)
 {
     font *f;
     int err;
@@ -94,12 +95,34 @@ open_font(char *fname)
     f->weight = get_name(f->face, f->nnames, TT_NAME_ID_FONT_SUBFAMILY);
     f->notice = get_name(f->face, f->nnames, TT_NAME_ID_COPYRIGHT);
 
+    if (what & WHAT_FONT) {
+	if (read_dir(f, fname) != 0) {
+	    close_font(f);
+	    return NULL;
+	}
+    }
+    if (what & WHAT_AFM) {
+	if ((err=TT_New_Instance(f->face, &f->fi)) != TT_Err_Ok) {
+	    fprintf(stderr, "%s: %s: can't create font instance: %s\n",
+		    prg, fname, TT_ErrToString18(err));
+	    close_font(f);
+	    return NULL;
+	}
+
+	if (TT_New_Glyph(f->face, &f->fg) != TT_Err_Ok) {
+	    fprintf(stderr, "%s: %s: can't create glyph container: %s\n",
+		    prg, fname, TT_ErrToString18(err));
+	    close_font(f);
+	    return NULL;
+	}
+    }
+
     return f;
 }
 
 
 
-char *
+static char *
 fixed2str(TT_Fixed f, int prec)
 {
     char b[23], *p;
@@ -133,3 +156,59 @@ fixed2str(TT_Fixed f, int prec)
     
     return strdup(b);
 }
+
+
+
+static int
+read_dir(font *f, char *fname)
+{
+    static char *table_name[] = {
+	"cvt ", "fpgm", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "prep"
+    };
+
+    int ntables, i, j;
+    TT_Long len;
+    struct table *dir;
+    unsigned char bh[12], *b;
+
+    len = 12;
+    TT_Get_Font_Data(f->face, 0, 0, bh, &len);
+
+    ntables = (bh[4]<<8)+bh[5];
+
+    dir = (struct table *)xmalloc(sizeof(struct table)*ntables);
+    b = (unsigned char *)xmalloc(ntables*16);
+
+    len = ntables*16;
+    TT_Get_Font_Data(f->face, 0, 12, b, &len);
+
+    for (i=0; i<16*ntables; i+=16) {
+	memcpy(dir[i/16].tag, b+i, 4);
+	dir[i/16].tag[4] = '\0';
+	dir[i/16].checksum = (((((b[i+4]<<8)+b[i+5])<<8)+b[i+6])<<8)+b[i+7];
+	dir[i/16].offset = (((((b[i+8]<<8)+b[i+9])<<8)+b[i+10])<<8)+b[i+11];
+	dir[i/16].length = (((((b[i+12]<<8)+b[i+13])<<8)+b[i+14])<<8)+b[i+15];
+    }
+    free(b);
+
+    for (i=j=0; i<ntables && j<9; i++) {
+	if (strcmp(dir[i].tag, table_name[j]) == 0) {
+	    f->dir[j] = dir[i];
+
+	    if (j != TABLE_GLYF && f->dir[j].length > MAX_STRLEN) {
+		fprintf(stderr, "%s: %s: table `%s' too long\n",
+		    prg, fname, f->dir[j].tag);
+		free(dir);
+		return -1;
+	    }
+	    
+	    j++;
+	}
+    }
+    free(dir);
+
+    /* XXX: check for missing table */
+
+    return 0;
+}
+

@@ -74,9 +74,6 @@ struct option options[] = {
     { NULL,        0, 0, 0   }
 };
 
-#define WHAT_FONT  0x1
-#define WHAT_AFM   0x2
-
 
 
 char *substext(char *fname, char *ext, char *newext);
@@ -178,7 +175,7 @@ main(int argc, char **argv)
     for (; optind<argc; optind++) {
 	fontfile = argv[optind];
 
-	if ((f=open_font(fontfile)) == NULL) {
+	if ((f=open_font(fontfile, what)) == NULL) {
 	    err = 1;
 	    continue;
 	}

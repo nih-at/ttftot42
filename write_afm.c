@@ -64,8 +64,6 @@ write_afm(font *f, FILE *fout)
 StartFontMetrics 4.1\n\
 Comment Creator: " PACKAGE " " VERSION "\n";
 
-    TT_Instance fi;
-    TT_Glyph fg;
     TT_Glyph_Metrics metrics;
     struct code code[256];
     struct glyph *glyph;
@@ -74,14 +72,6 @@ Comment Creator: " PACKAGE " " VERSION "\n";
     time_t fuck_ctime;
     int i;
 
-    if (TT_New_Instance(f->face, &fi) != TT_Err_Ok) {
-	return -1;
-    }
-
-    if (TT_New_Glyph(f->face, &fg) != TT_Err_Ok) {
-	return -1;
-    }
-    
     fputs(fixpart, fout);
     time(&fuck_ctime);
     fprintf(fout, "Comment Creation Date: %s", ctime(&fuck_ctime));
@@ -121,8 +111,8 @@ Comment Creator: " PACKAGE " " VERSION "\n";
     nglyph = make_glyph(f, code, &glyph);
     fprintf(fout, "StartCharMetrics %d\n", nglyph);
     for (i=0; i<nglyph; i++) {
-        TT_Load_Glyph(fi, fg, glyph[i].index, 0);
-        TT_Get_Glyph_Metrics(fg, &metrics);
+        TT_Load_Glyph(f->fi, f->fg, glyph[i].index, 0);
+        TT_Get_Glyph_Metrics(f->fg, &metrics);
 	
 	fprintf(fout, "C %d ; WX %d ; N %s ; B %d %d %d %d ;\n",
 		glyph[i].code != INT_MAX ? glyph[i].code : -1,

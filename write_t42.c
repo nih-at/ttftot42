@@ -30,13 +30,6 @@
 #include "config.h"
 #include "t42.h"
 
-struct table {
-    char tag[5];
-    unsigned long checksum;
-    unsigned long offset;
-    unsigned long length;
-};
-
 static int write_sfnts(font *f, FILE *fout);
 static int write_tabledir_entry(FILE *fout, struct table *t);
 static int write_table(FILE *f, unsigned char *b, unsigned long length,
@@ -45,7 +38,6 @@ static int write_glyf(FILE *fout, font *f, unsigned char *b,
 		      unsigned char *loca, unsigned long length,
 		      int *slen, int *offset);
 
-static int read_dir(font *f, struct table **dirp);
 static unsigned char *read_table(font *f, unsigned long offset,
 				 unsigned long length);
 
@@ -128,51 +120,24 @@ write_t42(font *f, FILE *fout)
 
 
 
-#define MAX_STRLEN  65534    /* max. PostScript string length - 1 */
-#define LINE_LEN    36       /* length of one line (in bytes) */
-#define HEADER_LEN  12+9*16  /* length of header and table directory */
-#define TABLE_GLYF  2        /* index of glyf table in table_names */
-#define TABLE_HEAD  3        /* index of head table */
-#define TABLE_LOCA  6        /* index of loca table */
-
 static int
 write_sfnts(font *f, FILE *fout)
 {
-    static char *table_name[] = {
-	"cvt ", "fpgm", "glyf", "head", "hhea", "hmtx", "loca", "maxp", "prep"
-    };
     static char *fixpart = "/sfnts[<\n00010000""0009""0080""0003""0010\n";
 
-    int ntables, i, j, slen, soff;
+    int i, slen, soff;
     unsigned long offset;
-    struct table *fdir;    /* full dir */
-    struct table sdir[9];  /* shortened dir */
     struct table wdir[9];  /* dir ready for writing */
     unsigned char *loca, *b;
 
     fputs(fixpart, fout);
 
-    ntables = read_dir(f, &fdir);
-
     offset = 0;
-    for (i=j=0; i<ntables && j<9; i++) {
-	if (strcmp(fdir[i].tag, table_name[j]) == 0) {
-	    sdir[j] = fdir[i];
-	    wdir[j] = fdir[i];
-	    wdir[j].offset = offset+HEADER_LEN;
-	    offset += (sdir[j].length+3) & ~3;
-
-	    if (j != TABLE_GLYF && wdir[j].length > MAX_STRLEN) {
-		/* XXX: table too long */
-		free(fdir);
-		return -1;
-	    }
-	    
-	    j++;
-	}
+    for (i=0; i<9; i++) {
+	wdir[i] = f->dir[i];
+	wdir[i].offset = offset+HEADER_LEN;
+	offset += (wdir[i].length+3) & ~3;
     }
-    /* XXX: check for missing table */
-
     
     /* XXX: adjust head checksum & font checksum in head table */
 
@@ -184,25 +149,25 @@ write_sfnts(font *f, FILE *fout)
     loca = NULL;
     for (i=0; i<9; i++) {
 	if (i != TABLE_LOCA || loca == NULL)
-	    b = read_table(f, sdir[i].offset, sdir[i].length);
+	    b = read_table(f, f->dir[i].offset, wdir[i].length);
 	else
 	    b = loca;
 
-	if (i == TABLE_GLYF && sdir[i].length > MAX_STRLEN) {
-	    loca = read_table(f, sdir[TABLE_LOCA].offset,
-			      sdir[TABLE_LOCA].length);
-	    write_glyf(fout, f, b, loca, sdir[i].length,
+	if (i == TABLE_GLYF && wdir[i].length > MAX_STRLEN) {
+	    loca = read_table(f, f->dir[TABLE_LOCA].offset,
+			      wdir[TABLE_LOCA].length);
+	    write_glyf(fout, f, b, loca, wdir[i].length,
 			&slen, &soff);
 	}
 	else
-	    write_table(fout, b, sdir[i].length, &slen, &soff);
+	    write_table(fout, b, wdir[i].length, &slen, &soff);
 	free(b);
     }
 
     if (offset % LINE_LEN != 0)
 	fputc('\n', fout);
     fputs("00>]def\n", fout);
-    printf("DEBUG: slen=%d\n", slen);
+    /* printf("DEBUG: slen=%d\n", slen); */
 
     return 0;
 }
@@ -229,7 +194,7 @@ write_table(FILE *fout, unsigned char *b, unsigned long length,
     if (*slen+length > MAX_STRLEN) {
 	if (*offset % LINE_LEN != 0)
 	    fputc('\n', fout);
-	printf("DEBUG: *slen=%d\n", *slen);
+	/* printf("DEBUG: *slen=%d\n", *slen); */
 	fputs("00><\n", fout);
 	*slen = *offset = 0;
     }
@@ -280,7 +245,7 @@ write_glyf(FILE *fout, font *f, unsigned char *b, unsigned char *loca,
 	    if (*offset % LINE_LEN != 0)
 		fputc('\n', fout);
 	    fputs("00><\n", fout);
-	    printf("DEBUG: len=%d\n", (int)(len+off_old-start));
+	    /* printf("DEBUG: len=%d\n", (int)(len+off_old-start)); */
 	    len = *offset = 0;
 
 	    start = off_old;
@@ -304,40 +269,6 @@ write_glyf(FILE *fout, font *f, unsigned char *b, unsigned char *loca,
     *slen = ((length+3) & ~3)-start;
 
     return 0;
-}
-
-
-
-static int
-read_dir(font *f, struct table **dirp)
-{
-    int ntables, i;
-    TT_Long len;
-    struct table *dir;
-    unsigned char bh[12], *b;
-
-    len = 12;
-    TT_Get_Font_Data(f->face, 0, 0, bh, &len);
-
-    ntables = (bh[4]<<8)+bh[5];
-
-    dir = (struct table *)xmalloc(sizeof(struct table)*ntables);
-    b = (unsigned char *)xmalloc(ntables*16);
-
-    len = ntables*16;
-    TT_Get_Font_Data(f->face, 0, 12, b, &len);
-
-    for (i=0; i<16*ntables; i+=16) {
-	memcpy(dir[i/16].tag, b+i, 4);
-	dir[i/16].tag[4] = '\0';
-	dir[i/16].checksum = (((((b[i+4]<<8)+b[i+5])<<8)+b[i+6])<<8)+b[i+7];
-	dir[i/16].offset = (((((b[i+8]<<8)+b[i+9])<<8)+b[i+10])<<8)+b[i+11];
-	dir[i/16].length = (((((b[i+12]<<8)+b[i+13])<<8)+b[i+14])<<8)+b[i+15];
-    }
-    free(b);
-
-    *dirp = dir;
-    return ntables;
 }
 
 

@@ -30,14 +30,35 @@
 
 #define SCALE(fu)	((int)(((fu)*1000)/f->units_per_em))
 
+#define WHAT_FONT  0x1   /* output Type 42 font */
+#define WHAT_AFM   0x2   /* output AFM file */
+
+#define MAX_STRLEN  65534    /* max. PostScript string length - 1 */
+#define LINE_LEN    36       /* length of one line (in bytes) */
+#define HEADER_LEN  12+9*16  /* length of header and table directory */
+#define TABLE_GLYF  2        /* index of glyf table */
+#define TABLE_HEAD  3        /* index of head table */
+#define TABLE_LOCA  6        /* index of loca table */
+
 
 
 struct bbox {
     int llx, lly, urx, ury;
 };
 
+struct table {
+    char tag[5];
+    unsigned long checksum;
+    unsigned long offset;
+    unsigned long length;
+};
+
 struct font {
     TT_Face face;
+    TT_Instance fi;
+    TT_Glyph fg;
+
+    struct table dir[9];
 
     int nglyph;
     int nnames;
@@ -70,15 +91,19 @@ struct font {
 
 typedef struct font font;
 
+
+
 extern char *prg;
 extern TT_Engine fte;
 extern char *enc_standard[256];
+
+
 
 void *xmalloc(size_t size);
 
 int init(void);
 int done(void);
-font *open_font(char *fname);
+font *open_font(char *fname, int what);
 void close_font(font *f);
 char *get_name(TT_Face f, int nnames, int name);
 int write_t42(font *f, FILE *fout);
