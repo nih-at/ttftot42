@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <ctype.h>
 
 #include <ftxpost.h>
 #include <ftxerr18.h>
@@ -47,6 +48,7 @@ open_font(char *fname, int what)
 {
     font *f;
     int err, i, j, weight;
+    char *version;
 
     TT_Face face;
     TT_Face_Properties prop;
@@ -99,10 +101,18 @@ open_font(char *fname, int what)
 
     f->tt_version = strdup("001.000"); /* FreeType only supports version 1.0 */
     f->version = (char *)malloc(8);
-    sprintf(f->version, "%03ld.%03ld",
-	    hdr->Font_Revision >> 16,
-	    ((hdr->Font_Revision & 0xffff)*1000)/0x10000);
-
+    version = get_name(f->face, f->nnames, TT_NAME_ID_VERSION_STRING);
+    if ((version && strncasecmp(version, "Version ", 8) == 0
+	 && isdigit(version[8]) && version[9] == '.'
+	 && isdigit(version[10]) && isdigit(version[10]))) {
+	sprintf(f->version, "00%c.%c%c0",
+		version[8], version[10], version[11]);
+    }
+    else
+	sprintf(f->version, "%03ld.%03ld",
+		hdr->Font_Revision >> 16,
+		((hdr->Font_Revision & 0xffff)*1000)/0x10000);
+    
     f->font_name = get_name(f->face, f->nnames, TT_NAME_ID_PS_NAME);
     for (j=i=0; i<strlen(f->font_name); i++) {
 	if (!strchr(" \t\n\r()<>[]/%", f->font_name[i]))

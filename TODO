@@ -12,7 +12,7 @@ both
 
 * error handling (e. g. write error)
 * validate lexical correctness of glyph names
-* version vs. font_revision (parse version string)
+* parse version string more liberally
 - XUID
 
 afm

@@ -1,5 +1,7 @@
 1999-01-03  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* open_font.c (open_font): parse Version string
+
 	* write_t42.c (write_t42): generate Encoding array.
 
 	* write_afm.c (write_afm): derive EncodingScheme from encoding
