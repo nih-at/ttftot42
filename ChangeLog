@@ -1,3 +1,11 @@
+2000-11-27  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* t42.h: include <freetype/freetype.h> if we have it.
+
+	* configure.in: change ttf check to work with new layout of
+	freetype install and NetBSD ELF.  Check wether we have
+	<freetype/freetype.h> or <freetype.h>.
+	
 1999-07-23  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* open_font.c (open_font): fall back to full_name if ps name not

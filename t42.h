@@ -26,7 +26,11 @@
 
 
 #include <stdio.h>
+#ifdef HAVE_FREETYPE_FREETYPE_H
+#include <freetype/freetype.h>
+#else
 #include <freetype.h>
+#endif
 
 #include "config.h"
 #include "cid.h"

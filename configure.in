@@ -7,32 +7,38 @@ AC_ARG_WITH(freetype,
     with_freetype=yes)
 
 # We want these before the checks, so the checks can modify their values.
-test -z "$CFLAGS" && CFLAGS='-g -Wall -I/usr/local/include' auto_cflags=1
-test -z "$LDFLAGS" && LDFLAGS='-L/usr/local/lib' auto_ldflags=1
-dnl test -z "$CFLAGS" && CFLAGS='-g -Wall' auto_cflags=1
+test -z "$CFLAGS" && CFLAGS='-g -Wall' auto_cflags=1
+dnl test -z "$CFLAGS" && CFLAGS='-g -Wall -I/usr/local/include' auto_cflags=1
+dnl test -z "$LDFLAGS" && LDFLAGS='-L/usr/local/lib' auto_ldflags=1
 
 dnl AC_CANONICAL_HOST
 dnl AM_PROG_LIBTOOL
 AC_PROG_CC
 dnl AM_PROG_INSTALL
 
+if test "$with_freetype" = "no"
+then
+	AC_MSG_ERROR(this program does not work without freetype)
+fi
+
 if test "$with_freetype" != "yes"
 then
     if test -f "$with_freetype"/lib/freetype.h
     then
 	# PREFIX is to uninstalled version in distribution directory
+	# XXX: check for newer versions of freetype
 	CFLAGS="$CFLAGS -I$with_freetype/lib"
 	LDFLAGS="$LDFLAGS -L$with_freetype/lib"
-    else if test -f "$with_freetype"/include/freetype.h
-    then
+    else
 	# PREFIX is installation prefix
 	CFLAGS="$CFLAGS -I$with_freetype/include"
-	LDFLAGS="$LDFLAGS -L$with_freetype/lib"
-    fi
+	LDFLAGS="$LDFLAGS -L$with_freetype/lib -Wl,-R$with_freetype/lib"
     fi
 fi
 
 AC_CHECK_LIB(ttf, TT_Open_Face)
+
+AC_CHECK_HEADERS(freetype/freetype.h freetype.h)
 
 if test "$ac_cv_lib_ttf_TT_Open_Face" != "yes"
 then
