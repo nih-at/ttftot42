@@ -44,7 +44,7 @@ static int read_dir(font *f, char *fname);
 
 
 font *
-open_font(char *fname, int what)
+open_font(char *fname, int what, int type)
 {
     font *f;
     int err, i, j, weight;
@@ -71,12 +71,27 @@ open_font(char *fname, int what)
     hdr = prop.header;
     os2 = prop.os2;
     ps = prop.postscript;
+
+    f->gsub = NULL;
+#ifdef HAVE_GSUB
+    if (type & TYPE_CID) {
+	TTO_GSUBHeader foo;
+
+	TT_Load_GSUB_Table(face, &foo);
+	TT_Extension_Get( face.z,
+			  ( ((unsigned long)('G') << 24) |
+			    ((unsigned long)('S') << 16) |
+			    ((unsigned long)('U') << 8 ) |
+			    (unsigned long)('B') ), (void**)&f->gsub );
+    }
+#endif
     
     /* fill out info */
 
     f->face = face;
     f->nglyph = prop.num_Glyphs;
     f->nnames = prop.num_Names;
+    f->ncmaps = prop.num_CharMaps;
     f->long_loc = hdr->Index_To_Loc_Format;
     f->units_per_em = hdr->Units_Per_EM;
     

@@ -58,11 +58,12 @@ char help_string[] = "\
   -o, --output FILE     output to FILE\n\
   -c, --stdout          output to standard output\n\
   -e, --encoding ENC    encoding to use (std, pdf, latin1)\n\
+  -C, --cid COLL        create CID keyed font (with collection COLL)\n\
   -F, --full            include full TrueType font file (not yet implemented)\n\
 \n\
 Report bugs to <dillo@giga.or.at>.\n";
 
-#define OPTIONS	"hVafnNo:ce:F"
+#define OPTIONS	"hVafnNo:ce:C:F"
 
 struct option options[] = {
     { "help",      0, 0, 'h' },
@@ -75,6 +76,7 @@ struct option options[] = {
     { "output",    1, 0, 'o' },
     { "stdout",    0, 0, 'c' },
     { "encoding",  1, 0, 'e' },
+    { "cid",       1, 0, 'C' },
     { "full",      0, 0, 'F' },
     { NULL,        0, 0, 0   }
 };
@@ -93,7 +95,7 @@ main(int argc, char **argv)
     struct encoding *enc;
 
     int err, i;
-    int c, what, full, cat;
+    int c, what, type, full, cat;
     char *outfile;
     font *f;
     FILE *fout;
@@ -102,7 +104,7 @@ main(int argc, char **argv)
 
     prg = argv[0];
 
-    cat = full = what = 0;
+    cat = full = what = type = 0;
     enc = &encoding[0];
     outfile = NULL;
 
@@ -136,6 +138,9 @@ main(int argc, char **argv)
 			prg, optarg);
 		exit(1);
 	    }
+	    break;
+	case 'C':
+	    type |= TYPE_CID;
 	    break;
 	case 'o':
 	    outfile = optarg;
@@ -207,7 +212,7 @@ main(int argc, char **argv)
     for (; optind<argc; optind++) {
 	fontfile = argv[optind];
 
-	if ((f=open_font(fontfile, what)) == NULL) {
+	if ((f=open_font(fontfile, what, type)) == NULL) {
 	    err = 1;
 	    continue;
 	}
@@ -256,7 +261,10 @@ main(int argc, char **argv)
 		outfile = NULL;
 	    }
 	    if (fout) {
-		write_t42(f, fout, enc);
+		if (type == TYPE_T42)
+		    write_t42(f, fout, enc);
+		else
+		    write_cid2(f, fout, NULL);
 		fclose(fout);
 	    }
 	}

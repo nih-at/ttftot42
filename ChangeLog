@@ -1,4 +1,17 @@
+1999-01-08  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* write_t42.c (write_t42): moved parts shared with write_cid2 to
+	util.c.
+	* util.c: new file for routines shared by write_t42 and
+	write_cid2; created new function write_font_info.
+	* write_cid2.c, cid.c: first cut at CID keyed font support.
+	* main.c (main): new command line option --cid.
+	* t42.h: new defines for font type (TYPE_*).
+	* open_font.c: new argument type; callers changed.
+
 1999-01-04  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* t42.h: fixed bug in conditional include <libgen.h>
 
 	* open_font.c (open_font): terminate font_name when wheeding out
 	illegal characters.

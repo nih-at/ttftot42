@@ -30,7 +30,12 @@
 
 #include "config.h"
 
-#if (defined(HAVE_LIBGEN_H) || defined(HAVE_BASENAME))
+#ifdef HAVE_TT_INIT_GSUB_EXTENSION
+#define HAVE_GSUB
+#include <ftxopen.h>
+#endif
+
+#if (defined(HAVE_LIBGEN_H) && defined(HAVE_BASENAME))
 #include <libgen.h>
 #endif
 
@@ -45,10 +50,14 @@ char *strdup(char *name);
 
 #define SCALE(fu)	((int)(((fu)*1000)/f->units_per_em))
 
-#define WHAT_FONT  0x1   /* output Type 42 font */
+#define WHAT_FONT  0x1   /* output font */
 #define WHAT_AFM   0x2   /* output AFM file */
 #define WHAT_NAME  0x4   /* print FontName to stdout */
 #define WHAT_FILE  0x8   /* print FontName and file name to stdout */
+
+#define TYPE_T42   0x0   /* Type 42 */
+#define TYPE_CID   0x1   /* CID keyed font */
+#define TYPE_PFB   0x2   /* Type 1 */
 
 #define MAX_STRLEN  65534    /* max. PostScript string length - 1 */
 #define LINE_LEN    36       /* length of one line (in bytes) */
@@ -74,11 +83,15 @@ struct font {
     TT_Face face;
     TT_Instance fi;
     TT_Glyph fg;
+#ifdef HAVE_GSUB
+    TTO_GSUBHeader *gsub;
+#endif
 
     struct table dir[9];
 
     int nglyph;
     int nnames;
+    int ncmaps;
     char *version;
     char *tt_version;
     int vm_min;
@@ -121,6 +134,11 @@ struct encoding {
     int nreverse;
 };
 
+struct cid {
+    char *registry, *ordering;
+    int supplement;
+};
+
 
 
 extern char *prg;
@@ -134,10 +152,18 @@ void *xmalloc(size_t size);
 
 int init(void);
 int done(void);
-font *open_font(char *fname, int what);
+font *open_font(char *fname, int what, int type);
 void close_font(font *f);
 char *get_name(TT_Face f, int nnames, int name);
 int write_t42(font *f, FILE *fout, struct encoding *encoding);
+int write_cid2(font *f, FILE *fout, struct cid *cid);
 int write_afm(font *f, FILE *fout, struct encoding *encoding);
+
+int write_cidmap(font *f, FILE *fout);
+
+/* util.h */
+int write_font_info(FILE *fout, font *f);
+int write_sfnts(font *f, FILE *fout);
+
 
 #endif /* t42.h */

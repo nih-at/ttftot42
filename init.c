@@ -35,6 +35,9 @@ init(void)
     TT_Init_FreeType(&fte);
     TT_Init_Post_Extension(fte);
     TT_Init_Kerning_Extension(fte);
+#ifdef HAVE_GSUB
+    TT_Init_GSUB_Extension(fte);
+#endif
 
     return 0;
 }
