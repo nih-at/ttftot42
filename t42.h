@@ -30,6 +30,10 @@
 
 #include "config.h"
 
+#if (defined(HAVE_LIBGEN_H) || defined(HAVE_BASENAME))
+#include <libgen.h>
+#endif
+
 #ifndef HAVE_BASENAME
 char *basename(char *name);
 #endif

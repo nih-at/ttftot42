@@ -1,10 +1,9 @@
 general
 
-! check for/include libgen.h
 * use xmalloc
 * handle other encodings
 * documentation
-* lsm entry
+* option to print FontName(s) to stdout
 - TrueType collections
 - CID keyed t42 fonts
 - subsetting

@@ -1,5 +1,8 @@
 1998-12-24  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* t42.h, configure.in: check for <libgen.h> and include if found
+	(and we have basename).
+
 	* configure.in: new option --with-freetype, to specify either
 	installation prefix or distribution directory (if FreeType library
 	can't be found automatically).
