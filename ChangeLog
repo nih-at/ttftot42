@@ -1,5 +1,7 @@
 1999-04-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* cid_mkmap.c (cid_mkmap): return last defined cid + 1.
+
 	* open_font.c (open_font): fixed compile failure if gsub support
 	missing.
 

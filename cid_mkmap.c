@@ -82,5 +82,5 @@ cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp)
     }
 
     *mapp = map;
-    return ncid;
+    return ncid+1;
 }

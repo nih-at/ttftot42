@@ -37,9 +37,7 @@ cid2
 
 ! create index file
 ! find cid file based on registry-ordering-supplement
-! cid.c: create array of glyph indices, update to new version of cid struct
 ! vert and feature substitiutions
-! omit unencoded glyphs at end of CIDMap
 
 acidtocid, cidtoacid:
 
