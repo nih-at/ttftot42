@@ -93,8 +93,11 @@ Comment Creator: " PACKAGE " " VERSION "\n";
 	fputs("EncodingScheme AdobeStandardEncoding\n", fout);
     else
 	fprintf(fout, "EncodingScheme %s\n", encoding->full_name);
+#if 0
+    /* XXX: are not provided by FreeType */
     fprintf(fout, "CapHeight %d\n", f->capheight);
     fprintf(fout, "XHeight %d\n", f->xheight);
+#endif
     fprintf(fout, "Ascender %d\n", f->ascender);
     fprintf(fout, "Descender %d\n", f->descender);
     /* XXX: StdHW */

@@ -1,7 +1,11 @@
 general
 
+! install cid files
+
+* xmalloc.h
 * use xmalloc
 * handle encodings MacRoman and FontSpecific
+* use .enc files
 * documentation
 - TrueType collections
 - subsetting
@@ -16,7 +20,7 @@ both
 
 afm
 
-* CapHeight, XHeight (OS/2)
+* CapHeight, XHeight (OS/2) [not provided by FreeType]
 * StdHW, StdVW
 * better handling of encodings with glyphs encoded more than once (ISOLatin1)
 * create CID AFM files
@@ -31,7 +35,11 @@ t42
 
 cid2
 
-! vert and jajn substitiutions
+! find cid file based on registry-ordering-supplement
+! cid.c: create array of glyph indices, update to new version of cid struct
+! vert and feature substitiutions
 ! omit unencoded glyphs at end of CIDMap
-! cid.c: create array of glyph indices included in struct cid.
-! CID0: add ncids, substitutions, support for multiple cmaps.
+
+acidtocid, cidtoacid:
+
+! error handling

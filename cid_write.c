@@ -40,7 +40,7 @@ int
 cid_write(char *fname, struct cid *cid)
 {
     FILE *f;
-    int len;
+    int len, i, j;
     struct cid_cmap *cmap;
 
     if (cid->v_major != 1) {
@@ -72,10 +72,10 @@ cid_write(char *fname, struct cid *cid)
 	len++;
     len += 2 + cid->nsupl*4 + 2;
 
-    write_short(f, len);
+    write_long(f, len);
     write_string(f, cid->registry);
     write_string(f, cid->ordering);
-    write_short(f, cid->nsupl);
+    write_short(f, cid->nsupl-1);
     for (i=0; i<cid->nsupl; i++)
 	write_long(f, cid->supl_ncid[i]);
     write_short(f, cid->ncmap);
@@ -84,33 +84,31 @@ cid_write(char *fname, struct cid *cid)
     /* maps */
 
     for (i=0; i<cid->ncmap; i++) {
-	cmap = cid->cmap[i];
+	cmap = cid->cmap+i;
 	
-	len = 28 + 12*cmap->nfeature + 2*cmap->code->len;
+	len = 28 + 12*cmap->nfeature + 2*cmap->code->ndata;
 
-	write_short(f, len);
+	write_long(f, len);
 	write_short(f, cmap->pid);
 	write_short(f, cmap->eid);
-	write_long(f, cid->vert.script);
-	write_long(f, cid->vert.language);
-	write_long(f, cid->vert.feature);
+	write_long(f, cmap->vert.script);
+	write_long(f, cmap->vert.language);
+	write_long(f, cmap->vert.feature);
 	write_long(f, cmap->nfeature);
 	for (j=0; j<cmap->nfeature; j++) {
-	    write_long(f, cid->feature[i].script);
-	    write_long(f, cid->feature[i].language);
-	    write_long(f, cid->feature[i].feature);
+	    write_long(f, cmap->feature[i].script);
+	    write_long(f, cmap->feature[i].language);
+	    write_long(f, cmap->feature[i].feature);
 	}
 	write_long(f, cmap->code->nchar);
-	write_long(f, cmap->code->len);
-	for (j=0; j<cmap->code->len; j++)
+	write_long(f, cmap->code->ndata);
+	for (j=0; j<cmap->code->ndata; j++)
 	    write_short(f, cmap->code->data[j]);
     }
 
     /* XXX: write error */
 
-    fclose(f);
-
-    return 0;
+    return fclose(f);
 }
 
 
@@ -126,5 +124,5 @@ write_string(FILE *f, char *s)
     write_short(f, len+pad);
     fprintf(f, "%s%c", s, '\0');
     if (pad)
-	putc('\0', c);
+	putc('\0', f);
 }

@@ -1,6 +1,9 @@
+#ifndef _HAD_SUBSTEXT_H
+#define _HAD_SUBSTEXT_H
+
 /*
-  xmalloc -- malloc with error exit on failure
-  Copyright (C) 1998, 1999 Dieter Baron
+  substext.h -- make substitution of exension of filename
+  Copyright (C) 1999 Dieter Baron
 
   This file is part of ttftot42, to use TrueType fonts in PostScript.
   The author can be contacted at <dillo@giga.or.at>
@@ -22,44 +25,18 @@
 
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "config.h"
 
-#include "t42.h"
+#if (defined(HAVE_LIBGEN_H) && defined(HAVE_BASENAME))
+#include <libgen.h>
+#endif
 
-void *
-xmalloc(size_t size)
-{
-    void *p;
-
-    if ((p=malloc(size)) == NULL) {
-	fprintf(stderr, "%s: malloc failure (size=%ld)\n",
-		prg, (long)size);
-	exit(1);
-    }
-
-    return p;
-}
+#ifndef HAVE_BASENAME
+char *basename(char *name);
+#endif
 
 
 
-void *
-xrealloc(void *data, size_t size)
-{
-    if (data) {
-	if ((data=realloc(data, size)) == NULL) {
-	    fprintf(stderr, "%s: realloc failure (size=%ld)\n",
-		    prg, (long)size);
-	    exit(1);
-	}
-    }
-    else {
-	if ((data=malloc(size)) == NULL) {
-	    fprintf(stderr, "%s: realloc failure (size=%ld)\n",
-		    prg, (long)size);
-	    exit(1);
-	}
-    }
-    
-    return data;
-}
+char *substext(char *fname, char *ext, char *newext);
+
+#endif /* substext.h */

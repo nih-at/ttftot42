@@ -1,6 +1,6 @@
 /*
-  xmalloc -- malloc with error exit on failure
-  Copyright (C) 1998, 1999 Dieter Baron
+  substext.c -- make substitution of exension of filename
+  Copyright (C) 1999 Dieter Baron
 
   This file is part of ttftot42, to use TrueType fonts in PostScript.
   The author can be contacted at <dillo@giga.or.at>
@@ -22,44 +22,29 @@
 
 
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
-#include "t42.h"
-
-void *
-xmalloc(size_t size)
-{
-    void *p;
-
-    if ((p=malloc(size)) == NULL) {
-	fprintf(stderr, "%s: malloc failure (size=%ld)\n",
-		prg, (long)size);
-	exit(1);
-    }
-
-    return p;
-}
+#include "substext.h"
 
 
 
-void *
-xrealloc(void *data, size_t size)
+char *
+substext(char *fname, char *ext, char *newext)
 {
-    if (data) {
-	if ((data=realloc(data, size)) == NULL) {
-	    fprintf(stderr, "%s: realloc failure (size=%ld)\n",
-		    prg, (long)size);
-	    exit(1);
-	}
+    static char b[8192];
+    int l, el;
+
+    l = strlen(fname);
+    el = strlen(ext);
+
+    if (strcasecmp(fname+l-el, ext) == 0) {
+	strncpy(b, fname, l-el);
+	strcpy(b+l-el, newext);
     }
     else {
-	if ((data=malloc(size)) == NULL) {
-	    fprintf(stderr, "%s: realloc failure (size=%ld)\n",
-		    prg, (long)size);
-	    exit(1);
-	}
+	strcpy(b, fname);
+	strcpy(b+l, newext);
     }
-    
-    return data;
+
+    return b;
 }

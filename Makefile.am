@@ -1,11 +1,17 @@
 LDADD=@LIBOBJS@
 
-bin_PROGRAMS=ttftot42
+bin_PROGRAMS=ttftot42 acidtocid cidtoacid
 
 ttftot42_SOURCES=main.c init.c open_font.c close_font.c get_name.c util.c \
 	write_t42.c write_afm.c write_cid2.c xmalloc.c cid.c \
-	encodings.c
+	encodings.c substext.c 
 
-noinst_HEADERS=t42.h getopt.h
+acidtocid_SOURCES=acidtocid.c cid_aread.c cid_write.c cid_util.c pideid.c \
+	xmalloc.c substext.c
+
+cidtoacid_SOURCES=cidtoacid.c cid_read.c cid_awrite.c cid_util.c cid_decode.c \
+	pideid.c xmalloc.c substext.c 
+
+noinst_HEADERS=t42.h cid.h pideid.h substext.h getopt.h
 
 EXTRA_DIST=REFERENCES ttftot42.lsm

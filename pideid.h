@@ -1,6 +1,9 @@
+#ifndef _HAD_PIDEID_H
+#define _HAD_PIDEID_H
+
 /*
-  xmalloc -- malloc with error exit on failure
-  Copyright (C) 1998, 1999 Dieter Baron
+  pideid.c -- convert Platform ID and Encoding ID between string and int
+  Copyright (C) 1999 Dieter Baron
 
   This file is part of ttftot42, to use TrueType fonts in PostScript.
   The author can be contacted at <dillo@giga.or.at>
@@ -22,44 +25,9 @@
 
 
 
-#include <stdio.h>
-#include <stdlib.h>
+int otf_str2pid(char *s);
+int otf_str2eid(int pid, char *s);
+char *otf_pid2str(int pid);
+char *otf_eid2str(int pid, int ed);
 
-#include "t42.h"
-
-void *
-xmalloc(size_t size)
-{
-    void *p;
-
-    if ((p=malloc(size)) == NULL) {
-	fprintf(stderr, "%s: malloc failure (size=%ld)\n",
-		prg, (long)size);
-	exit(1);
-    }
-
-    return p;
-}
-
-
-
-void *
-xrealloc(void *data, size_t size)
-{
-    if (data) {
-	if ((data=realloc(data, size)) == NULL) {
-	    fprintf(stderr, "%s: realloc failure (size=%ld)\n",
-		    prg, (long)size);
-	    exit(1);
-	}
-    }
-    else {
-	if ((data=malloc(size)) == NULL) {
-	    fprintf(stderr, "%s: realloc failure (size=%ld)\n",
-		    prg, (long)size);
-	    exit(1);
-	}
-    }
-    
-    return data;
-}
+#endif /* pideid.h */

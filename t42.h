@@ -29,18 +29,11 @@
 #include <freetype.h>
 
 #include "config.h"
+#include "cid.h"
 
 #ifdef HAVE_TT_INIT_GSUB_EXTENSION
 #define HAVE_GSUB
 #include <ftxopen.h>
-#endif
-
-#if (defined(HAVE_LIBGEN_H) && defined(HAVE_BASENAME))
-#include <libgen.h>
-#endif
-
-#ifndef HAVE_BASENAME
-char *basename(char *name);
 #endif
 
 #ifndef HAVE_STRDUP
@@ -136,11 +129,6 @@ struct encoding {
     int nreverse;
 };
 
-struct cid {
-    char *registry, *ordering;
-    int supplement;
-};
-
 
 
 extern char *prg;
@@ -151,6 +139,7 @@ extern int nencoding;
 
 
 void *xmalloc(size_t size);
+void *xrealloc(void *data, size_t size);
 
 int init(void);
 int done(void);

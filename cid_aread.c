@@ -23,9 +23,17 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
+#include "t42.h"
 #include "cid.h"
+#include "pideid.h"
+
+#define GET_TOKEN()	(p=strtok(NULL, " \t\n"),\
+			 (p==NULL ? error("command %s missing argument", b),0\
+                                  : 0))
 
 enum state {
     ST_BEGIN,	/* before StartCID */
@@ -36,6 +44,23 @@ enum state {
     ST_END	/* after EndCID */
 };
 
+void cid_encode_init(struct cid_code *code);
+int cid_encode(struct cid_code *code, char *line);
+void cid_encode_flush(struct cid_code *code);
+
+
+static int lineno;
+static char *filename;
+
+static void error(char *fmt, ...);
+static void warning(char *fmt, ...);
+
+static int make_tag(unsigned char *tag);
+
+static void grow(struct cid_code *code, int idx);
+static void store_cmd(struct cid_code *code, int cmd);
+static void store_arg(struct cid_code *code, int arg);
+
 
 
 struct cid *
@@ -44,16 +69,18 @@ cid_aread(char *fname)
     FILE *f;
     struct cid *cid;
     struct cid_cmap *cmap;
-    struct feature *feature;
-    FILE *f;
-    unsigned char b[8192], *p, *q;
-    int i, j, lineno;
-    int ccmap, ncmap;
+    struct cid_feature *feature;
+    enum state state;
+    char b[8192], *cmd, *p, *q;
+    int i;
+    int ccmap, ncmap, garbage, enc, ma, mi;
 
     if ((f=fopen(fname, "r")) == NULL) {
 	/* error: can't open file */
 	return NULL;
     }
+
+    filename = fname;
 
     state = ST_BEGIN;
     garbage = enc = 0;
@@ -83,11 +110,11 @@ cid_aread(char *fname)
 		}
 
 		if (ma != 1) {
-		    error("major version incompatibility (%d > 1)", major);
+		    error("major version incompatibility (%d > 1)", ma);
 		    return NULL;
 		}
 		if (mi != 0)
-		    warning("minor version incompatibility (%d > 0)", minor);
+		    warning("minor version incompatibility (%d > 0)", mi);
 
 		cid = cid_new();
 		cid->v_major = 1;
@@ -112,13 +139,13 @@ cid_aread(char *fname)
 	    }
 	    else if (strcmp(cmd, "Supplements") == 0) {
 		GET_TOKEN();
-		cid->supplement = atio(p);
+		cid->supplement = atoi(p);
 		cid->nsupl = cid->supplement+1;
-		cid->ncid_sup = (int *)xmalloc(sizeof(int)*cid->nsupl);
+		cid->supl_ncid = (int *)xmalloc(sizeof(int)*cid->nsupl);
 
-		for (i=0; i<=cid->nsupl; i++) {
+		for (i=0; i<cid->nsupl; i++) {
 		    GET_TOKEN();
-		    cid->ncid_sup[i] = atio(p);
+		    cid->supl_ncid[i] = atoi(p);
 		}
 	    }
 	    else if (strcmp(cmd, "StartCharmaps") == 0) {
@@ -134,7 +161,8 @@ cid_aread(char *fname)
 		    cid_free(cid);
 		    return NULL;
 		}
-		cid->cmap = (struct cmap *)xmalloc(sizeof(struct cmap)*ncmap);
+		cid->cmap = (struct cid_cmap *)xmalloc(sizeof(struct cid_cmap)
+						       * ncmap);
 
 		state = ST_CMAPS;
 	    }
@@ -149,14 +177,10 @@ cid_aread(char *fname)
 		    cid_free(cid);
 		    return NULL;
 		}
-		GET_TOKEN();
-		enc = atoi(p);
-		if (enc == 0) {
-		    error("at least one CID required");
-		    cid_free(cid);
-		    return NULL;
-		}
-		/* XXX: missing */
+		enc = 1;
+
+		for (i=0; i<cid->ncmap; i++)
+		    cid_encode_init(cid->cmap[i].code);
 		
 		state = ST_ENC;
 	    }
@@ -183,30 +207,35 @@ cid_aread(char *fname)
 	    if (strcmp(cmd, "StartCharmap") == 0) {
 		if (ccmap >= ncmap) {
 		    cid->cmap
-			= (struct cid_cmap *)xrealloc(sizeof(struct cid_cmap)
-						      * ccmap+1);
+			= (struct cid_cmap *)xrealloc(cid->cmap,
+						      (sizeof(struct cid_cmap)
+						       * ccmap+1));
 		}
 		cid->ncmap++;
-		cmap = cid->cmap[ccmap];
+		cmap = cid->cmap+ccmap;
 		GET_TOKEN();
-		cmap->pid = get_pid(p);
+		cmap->pid = otf_str2pid(p);
+		if (cmap->pid == -1)
+		    warning("unknown Platform ID `%s', Charmap ignored", p);
 		GET_TOKEN();
-		cmap->eid = get_eid(cid->cmap[cmap].pid, p);
+		cmap->eid = otf_str2eid(cmap->pid, p);
+		if (cmap->eid == -1)
+		    warning("unknown Encoding ID `%s', Charmap ignored", p);
 		cmap->vert.script = 0;
 		cmap->vert.language = 0;
 		cmap->vert.feature = 0;
 		cmap->nfeature = 0;
 		cmap->feature = NULL;
-		cmap->code = NULL;
+		cmap->code = cid_code_new();
 
 		state = ST_CMAP;
 	    }
 	    else if (strcmp(cmd, "EndCharmaps") == 0) {
 		if (cid->ncmap < ncmap)
-		    warning("%d Charmaps declared but only %d defined\n"
+		    warning("%d Charmaps declared but only %d defined\n",
 			    ncmap, ccmap);
 		if (cid->ncmap > ncmap)
-		    warning("only %d Charmaps declared but %d defined\n"
+		    warning("only %d Charmaps declared but %d defined\n",
 			    ncmap, ccmap);
 		
 		state = ST_CID;
@@ -217,26 +246,26 @@ cid_aread(char *fname)
 	    break;
 
 	case ST_CMAP:
-	    if ((strcmp(cmp, "Vertical") == 0
-		 || strcmp(cmp, "Feature") == 0)) {
-		if (strcmp(cmp, "Vertical") == 0)
-		    feature = &cmap->vert;
+	    if ((strcmp(cmd, "Vertical") == 0
+		 || strcmp(cmd, "Feature") == 0)) {
+		if (strcmp(cmd, "Vertical") == 0)
+		    feature = &(cmap->vert);
 		else {
 		    cmap->feature
-			= (struct feature *)xrealloc(cmap->feature,
-						     (sizeof(struct feature)
-						      * cmap->nfeature+1));
+			= ((struct cid_feature *)
+			   xrealloc(cmap->feature, (sizeof(struct cid_feature)
+						    * cmap->nfeature+1)));
 		    feature = cmap->feature+cmap->nfeature;
 		    cmap->nfeature++;
 		}
-		GET_TOK();
+		GET_TOKEN();
 		feature->script = make_tag(p);
-		GET_TOK();
+		GET_TOKEN();
 		feature->language = make_tag(p);
-		GET_TOK();
+		GET_TOKEN();
 		feature->feature = make_tag(p);
 	    }
-	    else if (strcmp(cmp, "EndCharmap") == 0) {
+	    else if (strcmp(cmd, "EndCharmap") == 0) {
 		ccmap++;
 
 		state = ST_CMAPS;
@@ -247,7 +276,18 @@ cid_aread(char *fname)
 
 	case ST_ENC:
 	    if (strcmp(cmd, "CID") == 0) {
-		/* XXX: missing */
+		GET_TOKEN();
+		/* check for consecutive cid values */
+		for (i=0; i<cid->ncmap; i++) {
+		    GET_TOKEN();
+		    cid_encode(cid->cmap[i].code, p);
+		}
+	    }
+	    else if (strcmp(cmd, "EndEncoding") == 0) {
+		for (i=0; i<cid->ncmap; i++)
+		    cid_encode_flush(cid->cmap[i].code);
+
+		state = ST_CID;
 	    }
 	    else
 		warning("unknown keyword `%s' ignored (inside Encoding)", cmd);
@@ -262,7 +302,233 @@ cid_aread(char *fname)
 	}
     }
 
-    /* XXX: post processing (check pid/eid) */
-    
+    fclose(f);
+
+    /* XXX: post processing (check pid/eid) , state == ST_END */
+
     return cid;
 }
+
+
+
+void
+cid_encode_init(struct cid_code *code)
+{
+    code->size = code->ndata = 0;
+    code->nchar = 0;
+    code->data = NULL;
+
+    code->cmd = C_none;
+    code->idx = 0;
+    code->len = 0;
+}
+
+
+
+int
+cid_encode(struct cid_code *code, char *line)
+{
+    int vvec, vtype, len, bit, v, vert;
+    char *q;
+
+    if (line[0] == '*') {
+	if (code->cmd != C_N || code->len >= 0x1fff) {
+	    cid_encode_flush(code);
+	    code->cmd = C_N;
+	}
+	code->len++;
+    }
+    else if (strchr(line, ',')) {
+	cid_encode_flush(code);
+	vvec = vtype = len = 0;
+	bit = 1;
+	while (line) {
+	    v = strtol(line, &q, 16);
+	    vert = (*q == 'v');
+	    store_arg(code, v);
+	    if (vert) {
+		vvec |= bit;
+		vtype |= 2;
+	    }
+	    else
+		vtype |= 1;
+	    
+	    bit <<= 1;
+	    if ((line = strchr(line, ',')))
+		line++;
+	}
+
+	switch (vtype) {
+	case 1:
+	    store_cmd(code, C_A);
+	    break;
+	case 2:
+	    store_cmd(code, C_AV);
+	    break;
+	case 3:
+	    if (code->len > 16) {
+		warning("mixed alternatives of length > 16 can't be encoded, "
+			"rest dropped");
+		code->len = 16;
+	    }
+	    grow(code, code->idx+code->len+2);
+	    memmove(code->data+code->idx+2, code->data+code->idx+1,
+		    code->len*sizeof(short));
+	    code->data[code->idx+1] = vvec;
+	    store_cmd(code, C_AM);
+	    break;
+	}
+    }
+    else {
+	v = strtol(line, &q, 16);
+	vert = (*q == 'v');
+
+	if ((code->len < 0x1fff
+	     && ((vert && code->cmd == C_OV) || (!vert && code->cmd == C_O))
+	     && code->data[code->idx+1]+code->len == v)) {
+	    code->len++;
+	}
+	else if ((code->len >= 0x1fff
+		  || (vert && code->cmd != C_LV)
+		  || (!vert && code->cmd != C_L))) {
+	    cid_encode_flush(code);
+	    code->cmd = vert ? C_LV : C_L;
+	    store_arg(code, v);
+	}
+	else if ((code->len > 1
+		  && code->data[code->idx+code->len] == v-1
+		  && code->data[code->idx+code->len-1] == v-2)) {
+	    code->len -= 2;
+	    if (code->len)
+		cid_encode_flush(code);
+	    code->cmd = vert ? C_OV : C_O;
+	    store_arg(code, v-2);
+	    code->len = 3;
+	}
+	else
+	    store_arg(code, v);
+    }
+
+    return 0;
+}
+
+
+
+void
+cid_encode_flush(struct cid_code *code)
+{
+    if (code->cmd != C_none)
+	store_cmd(code, code->cmd);
+}
+
+
+
+static void
+store_arg(struct cid_code *code, int arg)
+{
+    int idx;
+
+    code->len++;
+    idx = code->idx + code->len;
+
+    grow(code, idx);
+
+    code->data[idx] = arg;
+}
+
+
+
+static void
+store_cmd(struct cid_code *code, int cmd)
+{
+    grow(code, code->idx);
+
+    code->data[code->idx] = cmd | code->len;
+    
+    switch(cmd) {
+    case C_N:
+	code->idx += 1;
+	break;
+
+    case C_O:
+    case C_OV:
+	code->idx += 2;
+	break;
+
+    case C_L:
+    case C_LV:
+    case C_A:
+    case C_AV:
+	code->idx += code->len + 1;
+	break;
+
+    case C_AM:
+	code->idx += code->len + 2;
+	break;
+    }
+
+    code->len =  0;
+    code->ndata = code->idx;
+    code->cmd = C_none;
+}
+
+
+
+static void
+grow(struct cid_code *code, int idx)
+{
+    if (idx >= code->size) {
+	code->size += 1024;
+	code->data = (unsigned short *)xrealloc(code->data,
+						sizeof(unsigned short *)
+						* code->size);
+    }
+}
+
+
+
+static int
+make_tag(unsigned char *tag)
+{
+    int l;
+
+    l = strlen(tag);
+
+    return (((l>0 ? tag[0] : ' ') << 24)
+	    + ((l>1 ? tag[1] : ' ') << 16)
+	    + ((l>2 ? tag[2] : ' ') << 8)
+	    + (l>3 ? tag[3] : ' '));
+}
+
+
+
+static void
+error(char *fmt, ...)
+{
+    va_list va;
+
+    fprintf(stderr, "%s: %s:%d: ", prg, filename, lineno);
+
+    va_start(va, fmt);
+    vfprintf(stderr, fmt, va);
+    va_end(va);
+
+    putc('\n', stderr);
+}
+
+
+
+static void
+warning(char *fmt, ...)
+{
+    va_list va;
+
+    fprintf(stderr, "%s: %s:%d: warning: ", prg, filename, lineno);
+
+    va_start(va, fmt);
+    vfprintf(stderr, fmt, va);
+    va_end(va);
+
+    putc('\n', stderr);
+}
+

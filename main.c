@@ -30,6 +30,7 @@
 #include <getopt.h>
 
 #include "t42.h"
+#include "substext.h"
 
 #include "config.h"
 
@@ -85,10 +86,6 @@ struct option options[] = {
 static struct cid cid = {
     "Adobe", "Japan1", 2
 };
-
-
-
-char *substext(char *fname, char *ext, char *newext);
 
 
 
@@ -293,27 +290,4 @@ main(int argc, char **argv)
     done();
 
     exit(err);
-}
-
-
-
-char *
-substext(char *fname, char *ext, char *newext)
-{
-    static char b[8192];
-    int l, el;
-
-    l = strlen(fname);
-    el = strlen(ext);
-
-    if (strcasecmp(fname+l-el, ext) == 0) {
-	strncpy(b, fname, l-el);
-	strcpy(b+l-el, newext);
-    }
-    else {
-	strcpy(b, fname);
-	strcpy(b+l, newext);
-    }
-
-    return b;
 }
