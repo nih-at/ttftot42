@@ -57,7 +57,7 @@ open_font(char *fname, int what, int type)
     TT_OS2 *os2;
     TT_Post post;
 
-    if ((f=(font *)malloc(sizeof(font))) == NULL)
+    if ((f=(font *)xmalloc(sizeof(font))) == NULL)
 	return NULL;
 
     if ((err=TT_Open_Face(fte, fname, &face)) != TT_Err_Ok) {
@@ -120,7 +120,7 @@ open_font(char *fname, int what, int type)
 #endif
 
     f->tt_version = strdup("001.000"); /* FreeType only supports version 1.0 */
-    f->version = (char *)malloc(8);
+    f->version = (char *)xmalloc(8);
     version = get_name(f->face, f->nnames, TT_NAME_ID_VERSION_STRING);
     if ((version && strncasecmp(version, "Version ", 8) == 0
 	 && isdigit(version[8]) && version[9] == '.'

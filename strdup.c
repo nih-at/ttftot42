@@ -1,5 +1,5 @@
 /*
-  strdup -- save a copy of a string
+  strdup -- save a copy of a string (this version uses xmalloc)
   Copyright (C) 1996, 1997, 1998, 1999 Dieter Baron
 
   The author can be contacted at <dillo@giga.or.at>
@@ -28,7 +28,7 @@ strdup(char *s)
 {
 	char *t;
 
-	if (t=malloc(strlen(s)+1))
+	if (t=(char *)xmalloc(strlen(s)+1))
 		strcpy(t, s);
 
 	return t;

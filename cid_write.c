@@ -86,14 +86,17 @@ cid_write(char *fname, struct cid *cid)
     for (i=0; i<cid->ncmap; i++) {
 	cmap = cid->cmap+i;
 	
-	len = 28 + 12*cmap->nfeature + 2*cmap->code->ndata;
+	len = 20 + 12*cmap->nvert + 12*cmap->nfeature + 2*cmap->code->ndata;
 
 	write_long(f, len);
 	write_short(f, cmap->pid);
 	write_short(f, cmap->eid);
-	write_long(f, cmap->vert.script);
-	write_long(f, cmap->vert.language);
-	write_long(f, cmap->vert.feature);
+	write_long(f, cmap->nvert);
+	for (j=0; j<cmap->nvert; j++) {
+	    write_long(f, cmap->vert[i].script);
+	    write_long(f, cmap->vert[i].language);
+	    write_long(f, cmap->vert[i].feature);
+	}
 	write_long(f, cmap->nfeature);
 	for (j=0; j<cmap->nfeature; j++) {
 	    write_long(f, cmap->feature[i].script);

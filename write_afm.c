@@ -212,7 +212,7 @@ make_glyph(font *f, struct encoding *enc, struct glyph **g)
     struct glyph *glyph;
     struct rev_enc *c;
 
-    if ((glyph=(struct glyph *)malloc(sizeof(struct glyph)*f->nglyph)) == NULL)
+    if ((glyph=(struct glyph *)xmalloc(sizeof(struct glyph)*f->nglyph)) == NULL)
 	return 0;
     
     for (j=i=0; i<f->nglyph; i++) {
@@ -268,7 +268,7 @@ make_kern(font *f, struct kern **k)
 
 	    k0 = kd.tables[i].t.kern0;
 
-	    if ((kern=(struct kern *)malloc(sizeof(struct kern)*k0.nPairs))
+	    if ((kern=(struct kern *)xmalloc(sizeof(struct kern)*k0.nPairs))
 		== NULL)
 		return 0;
 	    

@@ -82,10 +82,7 @@ struct option options[] = {
     { NULL,        0, 0, 0   }
 };
 
-/* dummy cid struct */
-static struct cid cid = {
-    "Adobe", "Japan1", 2
-};
+struct cid *find_cid(char *name);
 
 
 
@@ -95,6 +92,7 @@ main(int argc, char **argv)
     extern int opterr, optind;
     extern char *optarg;
     struct encoding *enc;
+    struct cid *cid;
 
     int err, i;
     int c, what, type, full, cat;
@@ -143,6 +141,7 @@ main(int argc, char **argv)
 	    break;
 	case 'C':
 	    type |= TYPE_CID;
+	    cid = find_cid(optarg);
 	    break;
 	case 'o':
 	    outfile = optarg;
@@ -266,7 +265,7 @@ main(int argc, char **argv)
 		if (type == TYPE_T42)
 		    write_t42(f, fout, enc);
 		else
-		    write_cid2(f, fout, &cid);
+		    write_cid2(f, fout, cid);
 		fclose(fout);
 	    }
 	}
@@ -290,4 +289,17 @@ main(int argc, char **argv)
     done();
 
     exit(err);
+}
+
+
+
+struct cid *
+find_cid(char *name)
+{
+    /* XXX: dummy */
+
+    char b[8192];
+
+    sprintf(b, "cid/%s.cid", name);
+    return cid_read(b);
 }

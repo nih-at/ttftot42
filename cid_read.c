@@ -87,13 +87,13 @@ cid_read(char *fname)
     cid->ordering = get_string(&p);
     cid->supplement = get_short(&p);
     cid->nsupl = cid->supplement+1;
-    cid->supl_ncid = (int *)malloc(sizeof(int)*cid->nsupl);
+    cid->supl_ncid = (int *)xmalloc(sizeof(int)*cid->nsupl);
     for (i=0; i<cid->nsupl; i++)
 	cid->supl_ncid[i] = get_long(&p);
 
 
     cid->ncmap = get_short(&p);
-    cid->cmap = (struct cid_cmap *)malloc(sizeof(struct cid_cmap)*cid->ncmap);
+    cid->cmap = (struct cid_cmap *)xmalloc(sizeof(struct cid_cmap)*cid->ncmap);
 
     free(q);
 
@@ -110,25 +110,30 @@ cid_read(char *fname)
 
 	cmap->pid = get_short(&p);
 	cmap->eid = get_short(&p);
-	cmap->vert.script = get_long(&p);
-	cmap->vert.language = get_long(&p);
-	cmap->vert.feature = get_long(&p);
 
+	cmap->nvert = get_long(&p);
+	cmap->vert = (struct cid_feature *)xmalloc(sizeof(struct cid_feature)
+						   * cmap->nvert);
+	for (i=0; i<cmap->nvert; i++) {
+	    cmap->vert[i].script = get_long(&p);
+	    cmap->vert[i].language = get_long(&p);
+	    cmap->vert[i].feature = get_long(&p);
+	}
 	cmap->nfeature = get_long(&p);
-	cmap->feature = (struct cid_feature *)malloc(sizeof(struct
-							    cid_feature *)
-						     * cmap->nfeature);
+	cmap->feature = (struct cid_feature *)xmalloc(sizeof(struct
+							     cid_feature)
+						      * cmap->nfeature);
 	for (i=0; i<cmap->nfeature; i++) {
 	    cmap->feature[i].script = get_long(&p);
 	    cmap->feature[i].language = get_long(&p);
 	    cmap->feature[i].feature = get_long(&p);
 	}
 
-	cmap->code = (struct cid_code *)malloc(sizeof(struct cid_code));
+	cmap->code = (struct cid_code *)xmalloc(sizeof(struct cid_code));
 	cmap->code->nchar = get_long(&p);
 	cmap->code->ndata = cmap->code->size = get_long(&p);
 
-	cmap->code->data = (unsigned short *)malloc(sizeof(unsigned short)
+	cmap->code->data = (unsigned short *)xmalloc(sizeof(unsigned short)
 						    * cmap->code->ndata);
 	for (j=0; j<cmap->code->ndata; j++)
 	    cmap->code->data[j] = get_short(&p);
@@ -163,7 +168,7 @@ get_string(unsigned char **p)
     char *s;
 
     l = get_short(p);
-    s = (char *)malloc(l);
+    s = (char *)xmalloc(l);
     memcpy(s, *p, l);
     *p += l;
 

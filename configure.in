@@ -46,4 +46,4 @@ AC_CHECK_FUNCS(TT_Init_GSUB_Extension)
 AC_REPLACE_FUNCS(strdup strerror basename)
 AC_CHECK_FUNCS(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile cid/Makefile)

@@ -63,9 +63,9 @@ cid_awrite(char *fname, struct cid *cid)
 	fprintf(f, "StartCharmap %s %s\n",
 		otf_pid2str(cid->cmap[i].pid),
 		otf_eid2str(cid->cmap[i].pid, cid->cmap[i].eid));
-	if (cid->cmap[i].vert.script) {
+	for (j=0; j<cid->cmap[i].nvert; j++) {
 	    fprintf(f, "Vertical ");
-	    print_feature(f, &(cid->cmap[i].vert));
+	    print_feature(f, cid->cmap[i].vert+j);
 	}
 	for (j=0; j<cid->cmap[i].nfeature; j++) {
 	    fprintf(f, "Feature ");

@@ -152,9 +152,10 @@ int write_afm(font *f, FILE *fout, struct encoding *encoding);
 
 int write_cidmap(font *f, struct cid *cid, FILE *fout);
 
+int cid_mkmap(struct font *f, struct cid *cid, unsigned short **mapp);
+
 /* util.h */
 int write_font_info(FILE *fout, font *f);
 int write_sfnts(font *f, FILE *fout);
-
 
 #endif /* t42.h */

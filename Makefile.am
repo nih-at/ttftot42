@@ -1,9 +1,12 @@
 LDADD=@LIBOBJS@
 
+SUBDIRS=. cid
+
 bin_PROGRAMS=ttftot42 acidtocid cidtoacid
 
 ttftot42_SOURCES=main.c init.c open_font.c close_font.c get_name.c util.c \
-	write_t42.c write_afm.c write_cid2.c xmalloc.c cid.c \
+	write_t42.c write_afm.c write_cid2.c xmalloc.c \
+	cid_mkmap.c cid_read.c cid_util.c cid_decode.c \
 	encodings.c substext.c 
 
 acidtocid_SOURCES=acidtocid.c cid_aread.c cid_write.c cid_util.c pideid.c \

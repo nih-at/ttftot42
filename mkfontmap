@@ -1,0 +1,12 @@
+#!/bin/sh
+
+TTFTOT42=ttftot42
+
+# comment out if you don't want AFM files
+TTFTOT42_AFM='--afm'
+
+TTFTOT42_FLAGS="--filename --font $TTFTOT42_AFM"
+
+$TTFTOT42 $TTFTOT42_FLAGS "$@" \
+    | sed -e 's-[^	]*	.*/--' -e 's/\.[Tt][Tt][Ff]$//' \
+	-e 's-\([^	]*\)	\(.*\)-/\1 (\2.t42) ;-'

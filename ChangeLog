@@ -1,3 +1,18 @@
+1999-04-20  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* main.c (main): use find_cid to read cid struct.
+	(find_cid): dummy definition
+
+	* write_cid2.c (write_cidmap): moved here from cid.c; now uses
+	cid_mkmap.
+	* cid_mkmap.c (cid_mkmap): new function
+
+	* changed malloc to xmalloc and realloc to xrealloc throughout.
+
+	* cid_util.c (cid_free), cid_write.c (cid_write), cid_read.c
+	(cid_read), cid_awrite.c, (cid_awrite), cid_aread.c, (cid_aread),
+	cid.h: allow for more than one vert feature.
+
 1999-04-18  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* substext.h: moved basename declaration here from t42.h.

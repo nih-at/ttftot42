@@ -39,7 +39,8 @@ struct cid_feature {
 
 struct cid_cmap {
     int pid, eid;
-    struct cid_feature vert;
+    int nvert;
+    struct cid_feature *vert;
     int nfeature;
     struct cid_feature *feature;
 

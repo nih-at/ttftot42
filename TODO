@@ -1,9 +1,9 @@
 general
 
-! install cid files
+! CID references
+! document CID/ACID format
 
 * xmalloc.h
-* use xmalloc
 * handle encodings MacRoman and FontSpecific
 * use .enc files
 * documentation
@@ -35,6 +35,7 @@ t42
 
 cid2
 
+! create index file
 ! find cid file based on registry-ordering-supplement
 ! cid.c: create array of glyph indices, update to new version of cid struct
 ! vert and feature substitiutions

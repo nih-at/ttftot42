@@ -221,11 +221,8 @@ cid_aread(char *fname)
 		cmap->eid = otf_str2eid(cmap->pid, p);
 		if (cmap->eid == -1)
 		    warning("unknown Encoding ID `%s', Charmap ignored", p);
-		cmap->vert.script = 0;
-		cmap->vert.language = 0;
-		cmap->vert.feature = 0;
-		cmap->nfeature = 0;
-		cmap->feature = NULL;
+		cmap->nvert = cmap->nfeature = 0;
+		cmap->vert = cmap->feature = NULL;
 		cmap->code = cid_code_new();
 
 		state = ST_CMAP;
@@ -248,13 +245,19 @@ cid_aread(char *fname)
 	case ST_CMAP:
 	    if ((strcmp(cmd, "Vertical") == 0
 		 || strcmp(cmd, "Feature") == 0)) {
-		if (strcmp(cmd, "Vertical") == 0)
-		    feature = &(cmap->vert);
+		if (strcmp(cmd, "Vertical") == 0) {
+		    cmap->vert
+			= ((struct cid_feature *)
+			   xrealloc(cmap->vert, (sizeof(struct cid_feature)
+						    * (cmap->nvert+1))));
+		    feature = cmap->vert+cmap->nvert;
+		    cmap->nvert++;
+		}
 		else {
 		    cmap->feature
 			= ((struct cid_feature *)
 			   xrealloc(cmap->feature, (sizeof(struct cid_feature)
-						    * cmap->nfeature+1)));
+						    * (cmap->nfeature+1))));
 		    feature = cmap->feature+cmap->nfeature;
 		    cmap->nfeature++;
 		}

@@ -111,5 +111,38 @@ write_cid2(font *f, FILE *fout, struct cid *cid)
 
 
 
+int
+write_cidmap(font *f, struct cid *cid2, FILE *fout)
+{
+    int i;
+    int ncid, slen;
+    unsigned short *map;
 
+    if ((ncid=cid_mkmap(f, cid2, &map)) < 0)
+	return -1;
 
+    fputs("/GDBytes 2 def\n", fout);
+
+    fputs("/CIDMap [<\n", fout);
+
+    slen = 0;
+    for (i=0; i<ncid; i++) {
+	if (slen >= MAX_STRLEN) {
+	    fputs("\n> <\n", fout);
+	    slen = 0;
+	}
+
+	fprintf(fout, "%04hx", map[i]);
+	slen += 2;
+	if (slen % 36 == 0)
+	    putc('\n', fout);
+    }
+
+    fputs(">] def\n", fout);
+
+    fprintf(fout, "/CIDCount %d def\n", ncid);
+
+    free(map);
+
+    return 0;
+}   

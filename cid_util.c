@@ -59,6 +59,8 @@ cid_free(struct cid *cid)
     free(cid->supl_ncid);
     
     for (i=0; i<cid->ncmap; i++) {
+	if (cid->cmap[i].nvert)
+	    free(cid->cmap[i].vert);
 	if (cid->cmap[i].nfeature)
 	    free(cid->cmap[i].feature);
 	free(cid->cmap[i].code->data);

@@ -68,14 +68,14 @@ get_name(TT_Face f, int nnames, int name)
 		     && eid == TT_MS_ID_UNICODE_CS))) {
 		TT_Get_Name_String(f, i, &p, &len);
 		if (pid == TT_PLATFORM_MACINTOSH) {
-		    if ((s=(char *)malloc(len+1)) == NULL)
+		    if ((s=(char *)xmalloc(len+1)) == NULL)
 			return NULL;
 		    strncpy(s, p, len);
 		    s[len] = '\0';
 		    return s;
 		}
 		else {
-		    if ((s=(char *)malloc((len/2)+1)) == NULL)
+		    if ((s=(char *)xmalloc((len/2)+1)) == NULL)
 			return NULL;
 		    for (t=s; len; p+=2,len-=2) {
 			if (*p == 0)
