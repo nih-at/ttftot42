@@ -1,5 +1,8 @@
 1998-12-10  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* write_t42.c (write_strdef): omit FontInfo entries if string is
+	NULL.
+
 	* open_font.c (open_font): calculate weight from OS/2
 	usWeightClass.
 

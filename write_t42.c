@@ -157,6 +157,9 @@ write_string(FILE *fout, char *s)
 static void
 write_strdef(FILE *fout, char *n, char *s)
 {
+    if (s == NULL)
+	return;
+    
     fprintf(fout, "/%s (", n);
     write_string(fout, s);
     fprintf(fout, ") readonly def\n");
