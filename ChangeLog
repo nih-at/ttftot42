@@ -1,5 +1,7 @@
 2001-11-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
+	* open_font.c (open_font): fix calculation of underline_position.
+
 	* main.c (main): handle ENC_FROMFONT.
 	* util.c (get_encoding, clear_encoding): new functions.
 
