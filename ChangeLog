@@ -1,3 +1,11 @@
+2002-09-01  Dieter Baron  <dillo@danbala.tuwien.ac.at>
+
+	* util.c (write_tabledir_entry): fix warning in format string.
+
+	* open_font.c (open_font): ignore implausible italicAngle values.
+
+	* write_afm.c (make_kern): ignore kerning pairs with value 0.
+
 2001-11-17  Dieter Baron  <dillo@danbala.tuwien.ac.at>
 
 	* open_font.c (open_font): fix calculation of underline_position.
