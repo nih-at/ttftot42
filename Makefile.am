@@ -6,17 +6,53 @@ SUBDIRS=. cid
 
 bin_PROGRAMS=ttftot42 acidtocid cidtoacid
 
-ttftot42_SOURCES=main.c init.c open_font.c close_font.c get_name.c util.c \
-	write_t42.c write_afm.c write_cid2.c xmalloc.c \
-	cid_mkmap.c cid_read.c cid_util.c cid_decode.c \
-	encodings.c substext.c 
+ttftot42_SOURCES=\
+	cid_decode.c \
+	cid_mkmap.c \
+	cid_read.c \
+	cid_util.c \
+	close_font.c \
+	encodings.c \
+	get_name.c \
+	init.c \
+	main.c \
+	open_font.c \
+	substext.c \
+	util.c \
+	write_afm.c \
+	write_cid2.c \
+	write_t42.c \
+	xmalloc.c
 
-acidtocid_SOURCES=acidtocid.c cid_aread.c cid_write.c cid_util.c pideid.c \
-	xmalloc.c substext.c
+acidtocid_SOURCES=\
+	acidtocid.c \
+	cid_aread.c \
+	cid_util.c \
+	cid_write.c \
+	pideid.c \
+	substext.c \
+	xmalloc.c
 
-cidtoacid_SOURCES=cidtoacid.c cid_read.c cid_awrite.c cid_util.c cid_decode.c \
-	pideid.c xmalloc.c substext.c 
+cidtoacid_SOURCES=\
+	cid_awrite.c \
+	cid_decode.c \
+	cid_read.c \
+	cid_util.c \
+	cidtoacid.c \
+	pideid.c \
+	substext.c \
+	xmalloc.c
 
-noinst_HEADERS=t42.h cid.h pideid.h substext.h getopt.h
+noinst_HEADERS=\
+	cid.h \
+	getopt.h \
+	pideid.h \
+	substext.h \
+	t42.h
 
-EXTRA_DIST=REFERENCES ttftot42.lsm ttftot42.spec cid-format mkfontmap
+EXTRA_DIST=\
+	REFERENCES \
+	cid-format \
+	mkfontmap \
+	ttftot42.lsm \
+	ttftot42.spec
