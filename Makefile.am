@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS=foreign
+
 LDADD=@LIBOBJS@ ${FT2_LIBS}
 DEFS = @DEFS@ -DDATADIR=\"$(pkgdatadir)\" -I. -I$(srcdir) -I.
 AM_CFLAGS=${FT2_CFLAGS}
