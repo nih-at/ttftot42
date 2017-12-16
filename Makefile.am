@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS=foreign
 
+EXTRA_DIST=README.md
+
 LDADD=@LIBOBJS@ ${FT2_LIBS}
 DEFS = @DEFS@ -DDATADIR=\"$(pkgdatadir)\" -I. -I$(srcdir) -I.
 AM_CFLAGS=${FT2_CFLAGS}
