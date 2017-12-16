@@ -1,3 +1,5 @@
+**_Development on this project has stopped. It will no longer be updated._**
+
 This is `ttftot42`, a program to facilitate using TrueType fonts on
 PostScript interpreters with TrueType rasterizer.
 
